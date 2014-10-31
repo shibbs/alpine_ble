@@ -2436,6 +2436,8 @@ void SetStepperPWM(int PWM);
 
 
 
+
+
 #line 8 "..\\localLibs\\alpine_tl_state_machine.h"
 #line 1 "..\\localLibs\\alpine_boards.h"
 
@@ -14634,19 +14636,19 @@ typedef struct
  
 typedef struct ble_sm_s
 {
-    ble_sm_shutter_write_handler_t  shutter_write_handler;     
-    ble_sm_tl_pkt_write_handler_t   tl_pkt_write_handler;      
-    uint16_t                      service_handle;                  
-    ble_gatts_char_handles_t      ble_sm_state_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_time_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_tl_pkt_char_handles;  
-    ble_gatts_char_handles_t      ble_sm_shutter_char_handles;      	   
-		uint16_t                      report_ref_handle;               
-    uint8_t                       ble_sm_state_last;              
-		uint32_t											ble_sm_time_last;								 
-  	uint16_t                      conn_handle;                     
+	ble_sm_shutter_write_handler_t	shutter_write_handler;		 
+	ble_sm_tl_pkt_write_handler_t	 tl_pkt_write_handler;		  
+	uint16_t											service_handle;								  
+	ble_gatts_char_handles_t			ble_sm_state_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_time_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_tl_pkt_char_handles;			 
+	ble_gatts_char_handles_t			ble_sm_shutter_char_handles;					 
+	uint16_t											report_ref_handle;							 
+	uint8_t											 ble_sm_state_last;						  
+	uint32_t											ble_sm_time_last;								 
+	uint16_t											conn_handle;										 
 
-		uint8_t												uuid_type;
+	uint8_t												uuid_type;
 } ble_sm_t;
 
 

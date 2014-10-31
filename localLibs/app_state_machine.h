@@ -69,19 +69,19 @@ typedef struct
 */
 typedef struct ble_sm_s
 {
-    ble_sm_shutter_write_handler_t  shutter_write_handler;    /**< Event handler to be called for handling shutter write events in the ble SM Service. */
-    ble_sm_tl_pkt_write_handler_t   tl_pkt_write_handler;     /**< Event handler to be called for handling timelapse packet write events in the ble SM Service. */
-    uint16_t                      service_handle;                 /**< Handle of ble SM Service (as provided by the BLE stack). */
-    ble_gatts_char_handles_t      ble_sm_state_char_handles;      	  	/**< Handles related to the ble SM state characteristic. */
-    ble_gatts_char_handles_t      ble_sm_time_char_handles;      	  	/**< Handles related to the ble SM time characteristic. */
-    ble_gatts_char_handles_t      ble_sm_tl_pkt_char_handles; /**< Handles related to the ble SM time characteristic. */
-    ble_gatts_char_handles_t      ble_sm_shutter_char_handles;      	  /**< Handles related to the ble SM shutter characteristic. */
-		uint16_t                      report_ref_handle;              /**< Handle of the Report Reference descriptor. */
-    uint8_t                       ble_sm_state_last;             /**< Last ble State passed to the ble state machine. */
-		uint32_t											ble_sm_time_last;								/**< Last state machine time passed to the ble state machine. */
-  	uint16_t                      conn_handle;                    /**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */
-//    bool                          is_notification_supported;      /**< TRUE if notification of ble State Machine is supported. */	
-		uint8_t												uuid_type;
+	ble_sm_shutter_write_handler_t	shutter_write_handler;		/**< Event handler to be called for handling shutter write events in the ble SM Service. */
+	ble_sm_tl_pkt_write_handler_t	 tl_pkt_write_handler;		 /**< Event handler to be called for handling timelapse packet write events in the ble SM Service. */
+	uint16_t											service_handle;								 /**< Handle of ble SM Service (as provided by the BLE stack). */
+	ble_gatts_char_handles_t			ble_sm_state_char_handles;						/**< Handles related to the ble SM state characteristic. */
+	ble_gatts_char_handles_t			ble_sm_time_char_handles;						/**< Handles related to the ble SM time characteristic. */
+	ble_gatts_char_handles_t			ble_sm_tl_pkt_char_handles;			/**< Handles related to the ble SM tl packet characteristic. */
+	ble_gatts_char_handles_t			ble_sm_shutter_char_handles;					/**< Handles related to the ble SM shutter characteristic. */
+	uint16_t											report_ref_handle;							/**< Handle of the Report Reference descriptor. */
+	uint8_t											 ble_sm_state_last;						 /**< Last ble State passed to the ble state machine. */
+	uint32_t											ble_sm_time_last;								/**< Last state machine time passed to the ble state machine. */
+	uint16_t											conn_handle;										/**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */
+//		bool													is_notification_supported;			/**< TRUE if notification of ble State Machine is supported. */	
+	uint8_t												uuid_type;
 } ble_sm_t;
 
 /**@brief Function for initializing the State Machine Service.

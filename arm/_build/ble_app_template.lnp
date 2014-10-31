@@ -17,6 +17,7 @@
 ".\_build\ble_debug_assert_handler.o"
 ".\_build\alpine_tl_state_machine.o"
 ".\_build\alpine_boards.o"
+".\_build\app_state_machine.o"
 ".\_build\radian_stepper.o"
 --library_type=microlib --strict --scatter ".\_build\ble_app_template.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols

@@ -1,0 +1,16 @@
+.\_build\alpine_boards.o: ..\localLibs\alpine_boards.c
+.\_build\alpine_boards.o: ..\localLibs\alpine_boards.h
+.\_build\alpine_boards.o: ..\..\..\..\..\Include\nrf_gpio.h
+.\_build\alpine_boards.o: ..\..\..\..\..\Include\nrf51.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include\core_cm0.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include\core_cmInstr.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include\core_cmFunc.h
+.\_build\alpine_boards.o: ..\..\..\..\..\Include\system_nrf51.h
+.\_build\alpine_boards.o: ..\..\..\..\..\Include\nrf51_bitfields.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include\core_cm0.h
+.\_build\alpine_boards.o: ..\localLibs\alpine_includes.h
+.\_build\alpine_boards.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\string.h
+.\_build\alpine_boards.o: ..\..\..\..\..\Include\nordic_common.h
+.\_build\alpine_boards.o: ..\localLibs\radian_stepper.h
+.\_build\alpine_boards.o: ..\localLibs\alpine_includes.h

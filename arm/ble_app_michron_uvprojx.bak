@@ -600,17 +600,12 @@
           <GroupName>Custom Services</GroupName>
         </Group>
         <Group>
-          <GroupName>Michron Includes</GroupName>
+          <GroupName>SM_and_Includes</GroupName>
           <Files>
             <File>
               <FileName>app_state_machine.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\localLibs\app_state_machine.h</FilePath>
-            </File>
-            <File>
-              <FileName>alpine_tl_state_machine.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\localLibs\alpine_tl_state_machine.c</FilePath>
             </File>
             <File>
               <FileName>alpine_tl_state_machine.h</FileName>
@@ -626,6 +621,31 @@
               <FileName>alpine_includes.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\localLibs\alpine_includes.h</FilePath>
+            </File>
+            <File>
+              <FileName>alpine_tl_state_machine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\alpine_tl_state_machine.c</FilePath>
+            </File>
+            <File>
+              <FileName>alpine_boards.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\alpine_boards.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Utilities</GroupName>
+          <Files>
+            <File>
+              <FileName>radian_stepper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\localLibs\radian_stepper.h</FilePath>
+            </File>
+            <File>
+              <FileName>radian_stepper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\radian_stepper.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1228,17 +1248,12 @@
           <GroupName>Custom Services</GroupName>
         </Group>
         <Group>
-          <GroupName>Michron Includes</GroupName>
+          <GroupName>SM_and_Includes</GroupName>
           <Files>
             <File>
               <FileName>app_state_machine.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\localLibs\app_state_machine.h</FilePath>
-            </File>
-            <File>
-              <FileName>alpine_tl_state_machine.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\localLibs\alpine_tl_state_machine.c</FilePath>
             </File>
             <File>
               <FileName>alpine_tl_state_machine.h</FileName>
@@ -1254,6 +1269,31 @@
               <FileName>alpine_includes.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\localLibs\alpine_includes.h</FilePath>
+            </File>
+            <File>
+              <FileName>alpine_tl_state_machine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\alpine_tl_state_machine.c</FilePath>
+            </File>
+            <File>
+              <FileName>alpine_boards.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\alpine_boards.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Utilities</GroupName>
+          <Files>
+            <File>
+              <FileName>radian_stepper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\localLibs\radian_stepper.h</FilePath>
+            </File>
+            <File>
+              <FileName>radian_stepper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\localLibs\radian_stepper.c</FilePath>
             </File>
           </Files>
         </Group>

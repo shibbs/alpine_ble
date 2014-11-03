@@ -80,7 +80,6 @@ app_timer_id_t										EventClearTimer; //called periodically to make sure we h
 
 //function declarations
 static void InitForNewTL(void);
-static void AddEventToQueue( char event);
 static void HandleStateMachineEvent( char event);
 
 
@@ -89,12 +88,12 @@ static void HandleStateMachineEvent( char event);
 
 //regular timer callback functtion
  void RegularTimerDone(void * nil){
-	AddEventToQueue(TIMER1_EVT);
+	AddEventToTlSmQueue(TIMER1_EVT);
 	
 }
 //peripheral timer callback functtion
 void PeripheralTimerDone(void * nil){
-	AddEventToQueue(TIMER2_EVT);
+	AddEventToTlSmQueue(TIMER2_EVT);
 }
 
 /*This is the timer function
@@ -104,7 +103,7 @@ if it gets a 0, should just fire event right away
 static void SetTimer(unsigned long time){
 	uint32_t err_code;
 	if(time == 0){
-		AddEventToQueue(TIMER1_EVT);
+		AddEventToTlSmQueue(TIMER1_EVT);
 		return;
 	}
 	//we will want to add some code to correct for the slight error in timing. Currently we assume a 32Khz clock, but really it's 32.768KHz
@@ -119,7 +118,7 @@ if it gets a 0, should just fire event right away
 */
 static void SetPeripheralTimer(unsigned long time){
 	if(time == 0){
-		AddEventToQueue(TIMER1_EVT);
+		AddEventToTlSmQueue(TIMER1_EVT);
 		return;
 	}
 }
@@ -362,8 +361,10 @@ static void MovingState(char event){
 
 /* -------------STATE MACHINE HANDLING-------------------------------*/
 
-
-static void AddEventToQueue( char event){
+/*
+adds events to the alpine_tl_sm queue
+*/
+void AddEventToTlSmQueue( char event){
 	static 	void * nil; //needed for calling processEvents
 	if(Event_queue[Event_q_index] != NULL_EVT) Event_q_index ++; //check for if we're on 0th val and it's null
 	Event_queue[Event_q_index] = event;
@@ -423,10 +424,41 @@ static void GetEepromValues(){
 void StartupStateMachine(){
 	GetEepromValues();
 	Curr_state = PROCESSING_PACKET_STATE;
-	AddEventToQueue( POWER_TOGGLE_EVT ); //adds power toggle event to the queue
+	AddEventToTlSmQueue( POWER_TOGGLE_EVT ); //adds power toggle event to the queue
 }
 
 
+/*  -------------------------- GENERAL UTILITIES ----------------------------------*/
+
+/**@brief Function for verifying if an array contains a valid time-lapse packet. 
+ *
+ * @details takes in a reference to an array, checks the start flag, checksum, and end flag on the packet to ensure that the
+						packet is good. This function is used for evaluating incoming packets, as well as for checking the 
+						fidelity of data saved to internal memory
+
+*/
+bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
+	uint16_t num_vals; 
+	uint8_t checksum = 0;
+	uint16_t index = 0;
+	
+	//check the start flag first
+	if( tl_pkt_in[0] != TL_PACKET_START_FLAG ) return false;
+	
+	num_vals = tl_pkt_in[1]; //grab the number of Tls being sent
+	num_vals = num_vals * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN; //compute the expected length of the settings being sent, excluding the postamble
+	
+	//check the end flag
+	if( tl_pkt_in[ num_vals + TL_PACKET_POSTAMBLE_LEN-1] != TL_PACKET_END_FLAG) return false;
+	//compute the checksum
+	for( index=0; index < num_vals ; index++){
+		checksum += tl_pkt_in[index];
+	}
+	if(checksum != tl_pkt_in[num_vals]) return false; //check our checksum
+	
+	
+	return true;
+}
 
 
 

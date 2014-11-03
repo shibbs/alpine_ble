@@ -53,13 +53,17 @@
 //various timeouts
 #define PC_SYNC_TIMEOUT						100 // ms timeout while waiting for change on PC Sync line
 
+//Outward-facing SM utilities
 void StartupStateMachine();//function called on startup, gets the SM rolling.
+bool Tl_pkt_is_good(uint8_t * tl_pkt_in); //checks if a tl packet is good
+void AddEventToTlSmQueue( char event);
 
 
 //these are out timer callback functions
 void RegularTimerDone(void * nil);
 void PeripheralTimerDone(void * nil);
 void ProcessEvents(void* nil);
+
 
 //App timer id's, need to be non-static so that main.c can access them. 
 extern app_timer_id_t            				Regular_sm_timer;

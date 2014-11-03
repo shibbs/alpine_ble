@@ -534,11 +534,7 @@ void SetStepperPWM(int PWM);
 
 
 
-
-
-
-
-
+#line 22 "..\\localLibs\\alpine_includes.h"
 
 
 
@@ -14698,13 +14694,17 @@ void init_alpine_pins(void);
 
 
 
+
 void StartupStateMachine();
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
+void AddEventToTlSmQueue( char event);
 
 
 
 void RegularTimerDone(void * nil);
 void PeripheralTimerDone(void * nil);
 void ProcessEvents(void* nil);
+
 
 
 extern app_timer_id_t            				Regular_sm_timer;

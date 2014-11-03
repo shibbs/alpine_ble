@@ -2428,11 +2428,7 @@ void SetStepperPWM(int PWM);
 
 
 
-
-
-
-
-
+#line 22 "..\\localLibs\\alpine_includes.h"
 
 
 
@@ -11564,13 +11560,17 @@ void init_alpine_pins(void);
 
 
 
+
 void StartupStateMachine();
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
+void AddEventToTlSmQueue( char event);
 
 
 
 void RegularTimerDone(void * nil);
 void PeripheralTimerDone(void * nil);
 void ProcessEvents(void* nil);
+
 
 
 extern app_timer_id_t            				Regular_sm_timer;
@@ -14763,7 +14763,6 @@ app_timer_id_t										EventClearTimer;
 
 
 static void InitForNewTL(void);
-static void AddEventToQueue( char event);
 static void HandleStateMachineEvent( char event);
 
 
@@ -14772,12 +14771,12 @@ static void HandleStateMachineEvent( char event);
 
 
  void RegularTimerDone(void * nil){
-	AddEventToQueue(1);
+	AddEventToTlSmQueue(1);
 	
 }
 
 void PeripheralTimerDone(void * nil){
-	AddEventToQueue(5);
+	AddEventToTlSmQueue(5);
 }
 
 
@@ -14787,13 +14786,13 @@ void PeripheralTimerDone(void * nil){
 static void SetTimer(unsigned long time){
 	uint32_t err_code;
 	if(time == 0){
-		AddEventToQueue(1);
+		AddEventToTlSmQueue(1);
 		return;
 	}
 	
 	
 	err_code = app_timer_start(Regular_sm_timer, time * 4, 0); 
-	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 113, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
+	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 112, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
 }
 
 
@@ -14802,7 +14801,7 @@ static void SetTimer(unsigned long time){
  
 static void SetPeripheralTimer(unsigned long time){
 	if(time == 0){
-		AddEventToQueue(1);
+		AddEventToTlSmQueue(1);
 		return;
 	}
 }
@@ -15046,7 +15045,9 @@ static void MovingState(char event){
  
 
 
-static void AddEventToQueue( char event){
+
+ 
+void AddEventToTlSmQueue( char event){
 	static 	void * nil; 
 	if(Event_queue[Event_q_index] != 0) Event_q_index ++; 
 	Event_queue[Event_q_index] = event;
@@ -15106,10 +15107,41 @@ static void GetEepromValues(){
 void StartupStateMachine(){
 	GetEepromValues();
 	Curr_state = 6;
-	AddEventToQueue( 4 ); 
+	AddEventToTlSmQueue( 4 ); 
 }
 
 
+ 
+
+
+
+
+
+
+
+ 
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
+	uint16_t num_vals; 
+	uint8_t checksum = 0;
+	uint16_t index = 0;
+	
+	
+	if( tl_pkt_in[0] != 241 ) return 0;
+	
+	num_vals = tl_pkt_in[1]; 
+	num_vals = num_vals * 30 + 4; 
+	
+	
+	if( tl_pkt_in[ num_vals + 2-1] != 243) return 0;
+	
+	for( index=0; index < num_vals ; index++){
+		checksum += tl_pkt_in[index];
+	}
+	if(checksum != tl_pkt_in[num_vals]) return 0; 
+	
+	
+	return 1;
+}
 
 
 

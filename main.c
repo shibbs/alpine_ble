@@ -276,6 +276,7 @@ static void shutter_write_handler(ble_sm_t * p_ble_sm, uint8_t* array_in)
  *
  * @details saves the tl data into a temporary array. When a valid completed packet has been sent
 						it calls the New_tl_settings_rcvd() function
+FLAG SAH we need to add a system into this for alerting the host to successes or failures in the communications process
 
 */
 static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
@@ -284,21 +285,27 @@ static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 	static uint8_t last_packet_num = 0;
 	static uint8_t incoming_vals [TL_PACKET_MAX_LEN];
 	uint8_t packet_num = tl_pkt[0];
-	uint16_t index	= 0;
+	uint16_t temp	= 0;
+
 	
-	if (packet_num ==0) //if this is the first packet, then we need to get some information from it
+	//check if we are on the last packet. If so then we need to check the checksum and that the last value flag is in the right place
+	if(packet_num == num_packets){
+		if( Tl_pkt_is_good( tl_pkt ) ) AddEventToTlSmQueue(NEW_PACKET_EVT);
+		//else we need to return an error indicating that the packet was not recieved properly
+	}
+	else if (packet_num ==0) //if this is the first packet, then we need to get some information from it
 	{
 		num_packets = tl_pkt[2]; //grab the number of Tls being sent
-		num_packets = num_packets * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN; //compute the expected length of the settings being sent
+		num_packets = num_packets * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN + TL_PACKET_POSTAMBLE_LEN; //compute the expected length of the settings being sent
 		//FLAG SAH we need to thrown in a math.roundup in here
 		num_packets = num_packets / TL_SUB_PACKET_LEN; //figure out how many packets this will equal
 	}
 	else if( packet_num == (last_packet_num+1)) //check if our new packet number is correctly an increment of the last. This avoids missing a packet
 	{
-		index = packet_num * TL_SUB_PACKET_LEN;
+		temp = packet_num * TL_SUB_PACKET_LEN;
 		for(uint8_t i = 1; i <= TL_SUB_PACKET_LEN; i++){
-			incoming_vals[index] = tl_pkt[i];
-			index++;
+			incoming_vals[temp] = tl_pkt[i];
+			temp++;
 		}
 		last_packet_num ++; //increment our packet number
 	}

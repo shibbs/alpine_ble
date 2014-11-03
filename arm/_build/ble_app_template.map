@@ -19,11 +19,11 @@ Section Cross References
     main.o(.text) refers to app_timer.o(.text) for app_timer_init
     main.o(.text) refers to memseta.o(.text) for __aeabi_memclr4
     main.o(.text) refers to ble_advdata.o(.text) for ble_advdata_set
+    main.o(.text) refers to alpine_tl_state_machine.o(.text) for Tl_pkt_is_good
     main.o(.text) refers to idiv.o(.text) for __aeabi_idivmod
     main.o(.text) refers to app_state_machine.o(.text) for ble_sm_init
     main.o(.text) refers to ble_conn_params.o(.text) for ble_conn_params_init
     main.o(.text) refers to main.o(.bss) for APP_TIMER_BUF
-    main.o(.text) refers to alpine_tl_state_machine.o(.text) for RegularTimerDone
     main.o(.text) refers to alpine_tl_state_machine.o(.data) for Regular_sm_timer
     main.o(.text) refers to main.o(.constdata) for .constdata
     main.o(.text) refers to main.o(.data) for num_packets
@@ -144,19 +144,19 @@ Image Symbol Table
     ../clib/../cmprslib/zerorunl.c           0x00000000   Number         0  __dczerorl.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  uidiv.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  idiv.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
     ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpya.o ABSOLUTE
     ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpyb.o ABSOLUTE
     ../clib/microlib/string/memset.c         0x00000000   Number         0  memseta.o ABSOLUTE
@@ -220,150 +220,149 @@ Image Symbol Table
     gap_params_init                          0x000162e1   Thumb Code   124  main.o(.text)
     advertising_init                         0x0001635d   Thumb Code    86  main.o(.text)
     shutter_write_handler                    0x000163b3   Thumb Code     6  main.o(.text)
-    tl_pkt_write_handler                     0x000163b9   Thumb Code   100  main.o(.text)
-    services_init                            0x0001641d   Thumb Code    52  main.o(.text)
-    sec_params_init                          0x00016451   Thumb Code    66  main.o(.text)
-    on_conn_params_evt                       0x00016493   Thumb Code    48  main.o(.text)
-    conn_params_error_handler                0x000164c3   Thumb Code    22  main.o(.text)
-    conn_params_init                         0x000164d9   Thumb Code    82  main.o(.text)
-    timers_start                             0x0001652b   Thumb Code    46  main.o(.text)
-    advertising_start                        0x00016559   Thumb Code    74  main.o(.text)
-    on_ble_evt                               0x000165a3   Thumb Code   464  main.o(.text)
-    ble_evt_dispatch                         0x00016773   Thumb Code    26  main.o(.text)
-    sys_evt_dispatch                         0x0001678d   Thumb Code    12  main.o(.text)
-    ble_stack_init                           0x00016799   Thumb Code   154  main.o(.text)
-    scheduler_init                           0x00016833   Thumb Code    46  main.o(.text)
-    gpiote_init                              0x00016861   Thumb Code    44  main.o(.text)
-    input_interrupts_init                    0x0001688d   Thumb Code    48  main.o(.text)
-    power_manage                             0x000168bd   Thumb Code    34  main.o(.text)
-    nrf_gpio_pin_set                         0x0001691f   Thumb Code    10  main.o(.text)
-    nrf_gpio_pin_clear                       0x00016929   Thumb Code    10  main.o(.text)
-    app_timer_evt_schedule                   0x00016933   Thumb Code    22  main.o(.text)
-    app_button_evt_schedule                  0x00016949   Thumb Code    26  main.o(.text)
-    app_timer_evt_get                        0x00016963   Thumb Code    50  main.o(.text)
-    app_button_evt_get                       0x00016995   Thumb Code    50  main.o(.text)
-    .text                                    0x00016a64   Section        0  app_state_machine.o(.text)
-    on_connect                               0x00016a65   Thumb Code     6  app_state_machine.o(.text)
-    on_disconnect                            0x00016a6b   Thumb Code     8  app_state_machine.o(.text)
-    on_write                                 0x00016a73   Thumb Code    58  app_state_machine.o(.text)
-    sm_state_char_add                        0x00016aad   Thumb Code   324  app_state_machine.o(.text)
-    sm_time_char_add                         0x00016bf1   Thumb Code   326  app_state_machine.o(.text)
-    sm_tl_pkt_char_add                       0x00016d37   Thumb Code   248  app_state_machine.o(.text)
-    sm_shutter_char_add                      0x00016e2f   Thumb Code   254  app_state_machine.o(.text)
-    .text                                    0x00017014   Section        0  pstorage.o(.text)
-    cmd_queue_element_init                   0x00017015   Thumb Code    56  pstorage.o(.text)
-    cmd_queue_init                           0x0001704d   Thumb Code    40  pstorage.o(.text)
-    swap_state_process                       0x00017075   Thumb Code   578  pstorage.o(.text)
-    cmd_process                              0x000172b7   Thumb Code   382  pstorage.o(.text)
-    cmd_queue_enqueue                        0x00017435   Thumb Code   138  pstorage.o(.text)
-    app_notify                               0x000174bf   Thumb Code   100  pstorage.o(.text)
-    cmd_queue_dequeue                        0x00017523   Thumb Code    36  pstorage.o(.text)
-    is_word_aligned                          0x00017c93   Thumb Code    18  pstorage.o(.text)
-    .text                                    0x00017cac   Section        0  ble_advdata.o(.text)
-    name_encode                              0x00017cad   Thumb Code   150  ble_advdata.o(.text)
-    appearance_encode                        0x00017d43   Thumb Code    74  ble_advdata.o(.text)
-    uint8_array_encode                       0x00017d8d   Thumb Code    82  ble_advdata.o(.text)
-    tx_power_level_encode                    0x00017ddf   Thumb Code    48  ble_advdata.o(.text)
-    uuid_list_sized_encode                   0x00017e0f   Thumb Code   196  ble_advdata.o(.text)
-    uuid_list_encode                         0x00017ed3   Thumb Code    64  ble_advdata.o(.text)
-    conn_int_check                           0x00017f13   Thumb Code    88  ble_advdata.o(.text)
-    conn_int_encode                          0x00017f6b   Thumb Code    92  ble_advdata.o(.text)
-    manuf_specific_data_encode               0x00017fc7   Thumb Code   106  ble_advdata.o(.text)
-    service_data_encode                      0x00018031   Thumb Code   140  ble_advdata.o(.text)
-    adv_data_encode                          0x000180bd   Thumb Code   302  ble_advdata.o(.text)
-    advdata_check                            0x000181eb   Thumb Code    34  ble_advdata.o(.text)
-    srdata_check                             0x0001820d   Thumb Code    16  ble_advdata.o(.text)
-    uint16_encode                            0x00018297   Thumb Code    18  ble_advdata.o(.text)
-    .text                                    0x000182ac   Section        0  app_scheduler.o(.text)
-    app_sched_event_get                      0x000183dd   Thumb Code    84  app_scheduler.o(.text)
-    current_int_priority_get                 0x0001844f   Thumb Code    84  app_scheduler.o(.text)
-    next_index                               0x000184a3   Thumb Code    20  app_scheduler.o(.text)
-    .text                                    0x00018510   Section        0  app_timer.o(.text)
-    NVIC_SetPriority                         0x00018511   Thumb Code   110  app_timer.o(.text)
-    rtc1_init                                0x0001857f   Thumb Code    18  app_timer.o(.text)
-    rtc1_start                               0x00018591   Thumb Code    48  app_timer.o(.text)
-    rtc1_stop                                0x000185c1   Thumb Code    68  app_timer.o(.text)
-    timer_list_insert                        0x00018605   Thumb Code   212  app_timer.o(.text)
-    timer_list_remove                        0x000186d9   Thumb Code   170  app_timer.o(.text)
-    timer_timeouts_check_sched               0x00018783   Thumb Code    10  app_timer.o(.text)
-    timer_list_handler_sched                 0x0001878d   Thumb Code    10  app_timer.o(.text)
-    timeout_handler_exec                     0x00018797   Thumb Code    60  app_timer.o(.text)
-    timer_timeouts_check                     0x000187d3   Thumb Code   132  app_timer.o(.text)
-    elapsed_ticks_acquire                    0x00018857   Thumb Code    82  app_timer.o(.text)
-    list_deletions_handler                   0x000188a9   Thumb Code   284  app_timer.o(.text)
-    expired_timers_handler                   0x000189c5   Thumb Code   100  app_timer.o(.text)
-    list_insertions_handler                  0x00018a29   Thumb Code   264  app_timer.o(.text)
-    compare_reg_update                       0x00018b31   Thumb Code   124  app_timer.o(.text)
-    timer_list_handler                       0x00018bad   Thumb Code    70  app_timer.o(.text)
-    user_op_enque                            0x00018bf3   Thumb Code     4  app_timer.o(.text)
-    user_op_alloc                            0x00018bf7   Thumb Code    44  app_timer.o(.text)
-    timer_start_op_schedule                  0x00018c23   Thumb Code    80  app_timer.o(.text)
-    timer_stop_op_schedule                   0x00018c73   Thumb Code    58  app_timer.o(.text)
-    timer_stop_all_op_schedule               0x00018cad   Thumb Code    58  app_timer.o(.text)
-    user_id_get                              0x00018e77   Thumb Code    34  app_timer.o(.text)
-    NVIC_EnableIRQ                           0x00018f75   Thumb Code    14  app_timer.o(.text)
-    NVIC_SetPendingIRQ                       0x00018f83   Thumb Code    14  app_timer.o(.text)
-    NVIC_ClearPendingIRQ                     0x00018f91   Thumb Code    16  app_timer.o(.text)
-    current_int_priority_get                 0x00018fa1   Thumb Code    84  app_timer.o(.text)
-    rtc1_counter_get                         0x00018ff5   Thumb Code     6  app_timer.o(.text)
-    ticks_diff_get                           0x00018ffb   Thumb Code    10  app_timer.o(.text)
-    .text                                    0x00019034   Section        0  ble_conn_params.o(.text)
-    is_conn_params_ok                        0x00019035   Thumb Code    30  ble_conn_params.o(.text)
-    update_timeout_handler                   0x00019053   Thumb Code   136  ble_conn_params.o(.text)
-    conn_params_negotiation                  0x00019141   Thumb Code   126  ble_conn_params.o(.text)
-    on_connect                               0x000191bf   Thumb Code    42  ble_conn_params.o(.text)
-    on_disconnect                            0x000191e9   Thumb Code    50  ble_conn_params.o(.text)
-    on_write                                 0x0001921b   Thumb Code    84  ble_conn_params.o(.text)
-    on_conn_params_update                    0x0001926f   Thumb Code    20  ble_conn_params.o(.text)
-    .text                                    0x0001933c   Section        0  softdevice_handler.o(.text)
-    .text                                    0x00019510   Section        0  app_button.o(.text)
-    button_handler_execute                   0x00019511   Thumb Code    82  app_button.o(.text)
-    detection_delay_timeout_handler          0x00019563   Thumb Code   144  app_button.o(.text)
-    gpiote_event_handler                     0x000195f3   Thumb Code    52  app_button.o(.text)
-    .text                                    0x000197ac   Section        0  app_gpiote.o(.text)
-    sense_level_toggle                       0x000197ad   Thumb Code   128  app_gpiote.o(.text)
-    pins_sense_disable                       0x000198cb   Thumb Code    98  app_gpiote.o(.text)
-    NVIC_SetPriority                         0x00019b83   Thumb Code   110  app_gpiote.o(.text)
-    .text                                    0x00019c18   Section        0  ble_debug_assert_handler.o(.text)
-    .text                                    0x00019c54   Section        0  alpine_tl_state_machine.o(.text)
-    SetTimer                                 0x00019c55   Thumb Code    58  alpine_tl_state_machine.o(.text)
-    InitForNewTL                             0x00019c8f   Thumb Code     2  alpine_tl_state_machine.o(.text)
-    ProcessTLSettings                        0x00019c91   Thumb Code     8  alpine_tl_state_machine.o(.text)
-    ParsePacketPreamble                      0x00019c99   Thumb Code     2  alpine_tl_state_machine.o(.text)
-    ProcessingPacketState                    0x00019c9b   Thumb Code    84  alpine_tl_state_machine.o(.text)
-    HandlePreloadSettings                    0x00019cef   Thumb Code    86  alpine_tl_state_machine.o(.text)
-    UpdateCycleSettings                      0x00019d45   Thumb Code   172  alpine_tl_state_machine.o(.text)
-    MovingState                              0x00019df1   Thumb Code   132  alpine_tl_state_machine.o(.text)
-    InitNewTL                                0x00019e75   Thumb Code     8  alpine_tl_state_machine.o(.text)
-    FrontDelayState                          0x00019e7d   Thumb Code    32  alpine_tl_state_machine.o(.text)
-    HandleShutterDone                        0x00019e9d   Thumb Code    22  alpine_tl_state_machine.o(.text)
-    TakingPhotoState                         0x00019eb3   Thumb Code   156  alpine_tl_state_machine.o(.text)
-    HandleStateMachineEvent                  0x00019f4f   Thumb Code    84  alpine_tl_state_machine.o(.text)
-    AddEventToQueue                          0x0001a005   Thumb Code    44  alpine_tl_state_machine.o(.text)
-    SetPeripheralTimer                       0x0001a0f1   Thumb Code    20  alpine_tl_state_machine.o(.text)
-    GetEepromValues                          0x0001a105   Thumb Code     2  alpine_tl_state_machine.o(.text)
-    nrf_gpio_pin_set                         0x0001a11b   Thumb Code    10  alpine_tl_state_machine.o(.text)
-    nrf_gpio_pin_clear                       0x0001a125   Thumb Code    10  alpine_tl_state_machine.o(.text)
-    .text                                    0x0001a138   Section        0  alpine_boards.o(.text)
-    nrf_gpio_cfg_output                      0x0001a1cd   Thumb Code    18  alpine_boards.o(.text)
-    nrf_gpio_cfg_input                       0x0001a1df   Thumb Code    20  alpine_boards.o(.text)
-    .text                                    0x0001a1f4   Section        0  radian_stepper.o(.text)
-    nrf_gpio_cfg_output                      0x0001a30b   Thumb Code    18  radian_stepper.o(.text)
-    nrf_gpio_pin_set                         0x0001a31d   Thumb Code    10  radian_stepper.o(.text)
-    nrf_gpio_pin_clear                       0x0001a327   Thumb Code    10  radian_stepper.o(.text)
-    .text                                    0x0001a338   Section        0  uidiv.o(.text)
-    .text                                    0x0001a364   Section        0  idiv.o(.text)
-    .text                                    0x0001a38c   Section        0  memcpya.o(.text)
-    .text                                    0x0001a3b0   Section        0  memseta.o(.text)
-    .text                                    0x0001a3d4   Section        0  strncpy.o(.text)
-    .text                                    0x0001a3f0   Section       36  init.o(.text)
-    .text                                    0x0001a414   Section        0  __dczerorl.o(.text)
-    i.__ARM_common_switch8                   0x0001a44e   Section        0  pstorage.o(i.__ARM_common_switch8)
-    i.__scatterload_copy                     0x0001a46a   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x0001a478   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x0001a47a   Section       14  handlers.o(i.__scatterload_zeroinit)
-    .constdata                               0x0001a488   Section        4  main.o(.constdata)
-    .constdata                               0x0001a48c   Section       16  app_state_machine.o(.constdata)
+    tl_pkt_write_handler                     0x000163b9   Thumb Code   126  main.o(.text)
+    services_init                            0x00016437   Thumb Code    52  main.o(.text)
+    sec_params_init                          0x0001646b   Thumb Code    66  main.o(.text)
+    on_conn_params_evt                       0x000164ad   Thumb Code    48  main.o(.text)
+    conn_params_error_handler                0x000164dd   Thumb Code    22  main.o(.text)
+    conn_params_init                         0x000164f3   Thumb Code    82  main.o(.text)
+    timers_start                             0x00016545   Thumb Code    46  main.o(.text)
+    advertising_start                        0x00016573   Thumb Code    74  main.o(.text)
+    on_ble_evt                               0x000165bd   Thumb Code   468  main.o(.text)
+    ble_evt_dispatch                         0x00016791   Thumb Code    26  main.o(.text)
+    sys_evt_dispatch                         0x000167ab   Thumb Code    12  main.o(.text)
+    ble_stack_init                           0x000167b7   Thumb Code   152  main.o(.text)
+    scheduler_init                           0x0001684f   Thumb Code    46  main.o(.text)
+    gpiote_init                              0x0001687d   Thumb Code    44  main.o(.text)
+    input_interrupts_init                    0x000168a9   Thumb Code    48  main.o(.text)
+    power_manage                             0x000168d9   Thumb Code    34  main.o(.text)
+    nrf_gpio_pin_set                         0x0001693b   Thumb Code    10  main.o(.text)
+    nrf_gpio_pin_clear                       0x00016945   Thumb Code    10  main.o(.text)
+    app_timer_evt_schedule                   0x0001694f   Thumb Code    22  main.o(.text)
+    app_button_evt_schedule                  0x00016965   Thumb Code    26  main.o(.text)
+    app_timer_evt_get                        0x0001697f   Thumb Code    50  main.o(.text)
+    app_button_evt_get                       0x000169b1   Thumb Code    50  main.o(.text)
+    .text                                    0x00016a80   Section        0  app_state_machine.o(.text)
+    on_connect                               0x00016a81   Thumb Code     6  app_state_machine.o(.text)
+    on_disconnect                            0x00016a87   Thumb Code     8  app_state_machine.o(.text)
+    on_write                                 0x00016a8f   Thumb Code    58  app_state_machine.o(.text)
+    sm_state_char_add                        0x00016ac9   Thumb Code   324  app_state_machine.o(.text)
+    sm_time_char_add                         0x00016c0d   Thumb Code   326  app_state_machine.o(.text)
+    sm_tl_pkt_char_add                       0x00016d53   Thumb Code   248  app_state_machine.o(.text)
+    sm_shutter_char_add                      0x00016e4b   Thumb Code   254  app_state_machine.o(.text)
+    .text                                    0x00017030   Section        0  pstorage.o(.text)
+    cmd_queue_element_init                   0x00017031   Thumb Code    56  pstorage.o(.text)
+    cmd_queue_init                           0x00017069   Thumb Code    40  pstorage.o(.text)
+    swap_state_process                       0x00017091   Thumb Code   578  pstorage.o(.text)
+    cmd_process                              0x000172d3   Thumb Code   382  pstorage.o(.text)
+    cmd_queue_enqueue                        0x00017451   Thumb Code   138  pstorage.o(.text)
+    app_notify                               0x000174db   Thumb Code   100  pstorage.o(.text)
+    cmd_queue_dequeue                        0x0001753f   Thumb Code    36  pstorage.o(.text)
+    is_word_aligned                          0x00017caf   Thumb Code    18  pstorage.o(.text)
+    .text                                    0x00017cc8   Section        0  ble_advdata.o(.text)
+    name_encode                              0x00017cc9   Thumb Code   150  ble_advdata.o(.text)
+    appearance_encode                        0x00017d5f   Thumb Code    74  ble_advdata.o(.text)
+    uint8_array_encode                       0x00017da9   Thumb Code    82  ble_advdata.o(.text)
+    tx_power_level_encode                    0x00017dfb   Thumb Code    48  ble_advdata.o(.text)
+    uuid_list_sized_encode                   0x00017e2b   Thumb Code   196  ble_advdata.o(.text)
+    uuid_list_encode                         0x00017eef   Thumb Code    64  ble_advdata.o(.text)
+    conn_int_check                           0x00017f2f   Thumb Code    88  ble_advdata.o(.text)
+    conn_int_encode                          0x00017f87   Thumb Code    92  ble_advdata.o(.text)
+    manuf_specific_data_encode               0x00017fe3   Thumb Code   106  ble_advdata.o(.text)
+    service_data_encode                      0x0001804d   Thumb Code   140  ble_advdata.o(.text)
+    adv_data_encode                          0x000180d9   Thumb Code   302  ble_advdata.o(.text)
+    advdata_check                            0x00018207   Thumb Code    34  ble_advdata.o(.text)
+    srdata_check                             0x00018229   Thumb Code    16  ble_advdata.o(.text)
+    uint16_encode                            0x000182b3   Thumb Code    18  ble_advdata.o(.text)
+    .text                                    0x000182c8   Section        0  app_scheduler.o(.text)
+    app_sched_event_get                      0x000183f9   Thumb Code    84  app_scheduler.o(.text)
+    current_int_priority_get                 0x0001846b   Thumb Code    84  app_scheduler.o(.text)
+    next_index                               0x000184bf   Thumb Code    20  app_scheduler.o(.text)
+    .text                                    0x0001852c   Section        0  app_timer.o(.text)
+    NVIC_SetPriority                         0x0001852d   Thumb Code   110  app_timer.o(.text)
+    rtc1_init                                0x0001859b   Thumb Code    18  app_timer.o(.text)
+    rtc1_start                               0x000185ad   Thumb Code    48  app_timer.o(.text)
+    rtc1_stop                                0x000185dd   Thumb Code    68  app_timer.o(.text)
+    timer_list_insert                        0x00018621   Thumb Code   212  app_timer.o(.text)
+    timer_list_remove                        0x000186f5   Thumb Code   170  app_timer.o(.text)
+    timer_timeouts_check_sched               0x0001879f   Thumb Code    10  app_timer.o(.text)
+    timer_list_handler_sched                 0x000187a9   Thumb Code    10  app_timer.o(.text)
+    timeout_handler_exec                     0x000187b3   Thumb Code    60  app_timer.o(.text)
+    timer_timeouts_check                     0x000187ef   Thumb Code   132  app_timer.o(.text)
+    elapsed_ticks_acquire                    0x00018873   Thumb Code    82  app_timer.o(.text)
+    list_deletions_handler                   0x000188c5   Thumb Code   284  app_timer.o(.text)
+    expired_timers_handler                   0x000189e1   Thumb Code   100  app_timer.o(.text)
+    list_insertions_handler                  0x00018a45   Thumb Code   264  app_timer.o(.text)
+    compare_reg_update                       0x00018b4d   Thumb Code   124  app_timer.o(.text)
+    timer_list_handler                       0x00018bc9   Thumb Code    70  app_timer.o(.text)
+    user_op_enque                            0x00018c0f   Thumb Code     4  app_timer.o(.text)
+    user_op_alloc                            0x00018c13   Thumb Code    44  app_timer.o(.text)
+    timer_start_op_schedule                  0x00018c3f   Thumb Code    80  app_timer.o(.text)
+    timer_stop_op_schedule                   0x00018c8f   Thumb Code    58  app_timer.o(.text)
+    timer_stop_all_op_schedule               0x00018cc9   Thumb Code    58  app_timer.o(.text)
+    user_id_get                              0x00018e93   Thumb Code    34  app_timer.o(.text)
+    NVIC_EnableIRQ                           0x00018f91   Thumb Code    14  app_timer.o(.text)
+    NVIC_SetPendingIRQ                       0x00018f9f   Thumb Code    14  app_timer.o(.text)
+    NVIC_ClearPendingIRQ                     0x00018fad   Thumb Code    16  app_timer.o(.text)
+    current_int_priority_get                 0x00018fbd   Thumb Code    84  app_timer.o(.text)
+    rtc1_counter_get                         0x00019011   Thumb Code     6  app_timer.o(.text)
+    ticks_diff_get                           0x00019017   Thumb Code    10  app_timer.o(.text)
+    .text                                    0x00019050   Section        0  ble_conn_params.o(.text)
+    is_conn_params_ok                        0x00019051   Thumb Code    30  ble_conn_params.o(.text)
+    update_timeout_handler                   0x0001906f   Thumb Code   136  ble_conn_params.o(.text)
+    conn_params_negotiation                  0x0001915d   Thumb Code   126  ble_conn_params.o(.text)
+    on_connect                               0x000191db   Thumb Code    42  ble_conn_params.o(.text)
+    on_disconnect                            0x00019205   Thumb Code    50  ble_conn_params.o(.text)
+    on_write                                 0x00019237   Thumb Code    84  ble_conn_params.o(.text)
+    on_conn_params_update                    0x0001928b   Thumb Code    20  ble_conn_params.o(.text)
+    .text                                    0x00019358   Section        0  softdevice_handler.o(.text)
+    .text                                    0x0001952c   Section        0  app_button.o(.text)
+    button_handler_execute                   0x0001952d   Thumb Code    82  app_button.o(.text)
+    detection_delay_timeout_handler          0x0001957f   Thumb Code   144  app_button.o(.text)
+    gpiote_event_handler                     0x0001960f   Thumb Code    52  app_button.o(.text)
+    .text                                    0x000197c8   Section        0  app_gpiote.o(.text)
+    sense_level_toggle                       0x000197c9   Thumb Code   128  app_gpiote.o(.text)
+    pins_sense_disable                       0x000198e7   Thumb Code    98  app_gpiote.o(.text)
+    NVIC_SetPriority                         0x00019b9f   Thumb Code   110  app_gpiote.o(.text)
+    .text                                    0x00019c34   Section        0  ble_debug_assert_handler.o(.text)
+    .text                                    0x00019c70   Section        0  alpine_tl_state_machine.o(.text)
+    SetTimer                                 0x00019c71   Thumb Code    58  alpine_tl_state_machine.o(.text)
+    InitForNewTL                             0x00019cab   Thumb Code     2  alpine_tl_state_machine.o(.text)
+    ProcessTLSettings                        0x00019cad   Thumb Code     8  alpine_tl_state_machine.o(.text)
+    ParsePacketPreamble                      0x00019cb5   Thumb Code     2  alpine_tl_state_machine.o(.text)
+    ProcessingPacketState                    0x00019cb7   Thumb Code    84  alpine_tl_state_machine.o(.text)
+    HandlePreloadSettings                    0x00019d0b   Thumb Code    86  alpine_tl_state_machine.o(.text)
+    UpdateCycleSettings                      0x00019d61   Thumb Code   172  alpine_tl_state_machine.o(.text)
+    MovingState                              0x00019e0d   Thumb Code   132  alpine_tl_state_machine.o(.text)
+    InitNewTL                                0x00019e91   Thumb Code     8  alpine_tl_state_machine.o(.text)
+    FrontDelayState                          0x00019e99   Thumb Code    32  alpine_tl_state_machine.o(.text)
+    HandleShutterDone                        0x00019eb9   Thumb Code    22  alpine_tl_state_machine.o(.text)
+    TakingPhotoState                         0x00019ecf   Thumb Code   156  alpine_tl_state_machine.o(.text)
+    HandleStateMachineEvent                  0x00019f6b   Thumb Code    84  alpine_tl_state_machine.o(.text)
+    SetPeripheralTimer                       0x0001a10d   Thumb Code    20  alpine_tl_state_machine.o(.text)
+    GetEepromValues                          0x0001a121   Thumb Code     2  alpine_tl_state_machine.o(.text)
+    nrf_gpio_pin_set                         0x0001a17f   Thumb Code    10  alpine_tl_state_machine.o(.text)
+    nrf_gpio_pin_clear                       0x0001a189   Thumb Code    10  alpine_tl_state_machine.o(.text)
+    .text                                    0x0001a19c   Section        0  alpine_boards.o(.text)
+    nrf_gpio_cfg_output                      0x0001a231   Thumb Code    18  alpine_boards.o(.text)
+    nrf_gpio_cfg_input                       0x0001a243   Thumb Code    20  alpine_boards.o(.text)
+    .text                                    0x0001a258   Section        0  radian_stepper.o(.text)
+    nrf_gpio_cfg_output                      0x0001a36f   Thumb Code    18  radian_stepper.o(.text)
+    nrf_gpio_pin_set                         0x0001a381   Thumb Code    10  radian_stepper.o(.text)
+    nrf_gpio_pin_clear                       0x0001a38b   Thumb Code    10  radian_stepper.o(.text)
+    .text                                    0x0001a39c   Section        0  uidiv.o(.text)
+    .text                                    0x0001a3c8   Section        0  idiv.o(.text)
+    .text                                    0x0001a3f0   Section        0  memcpya.o(.text)
+    .text                                    0x0001a414   Section        0  memseta.o(.text)
+    .text                                    0x0001a438   Section        0  strncpy.o(.text)
+    .text                                    0x0001a454   Section       36  init.o(.text)
+    .text                                    0x0001a478   Section        0  __dczerorl.o(.text)
+    i.__ARM_common_switch8                   0x0001a4b2   Section        0  pstorage.o(i.__ARM_common_switch8)
+    i.__scatterload_copy                     0x0001a4ce   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x0001a4dc   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x0001a4de   Section       14  handlers.o(i.__scatterload_zeroinit)
+    .constdata                               0x0001a4ec   Section        4  main.o(.constdata)
+    .constdata                               0x0001a4f0   Section       16  app_state_machine.o(.constdata)
     .data                                    0x20002000   Section        4  system_nrf51.o(.data)
     __tagsym$$used                           0x20002000   Number         0  system_nrf51.o(.data)
     .data                                    0x20002004   Section       20  main.o(.data)
@@ -513,90 +512,92 @@ Image Symbol Table
     SystemInit                               0x000161d1   Thumb Code    38  system_nrf51.o(.text)
     app_error_handler                        0x00016215   Thumb Code    20  main.o(.text)
     assert_nrf_callback                      0x00016229   Thumb Code    18  main.o(.text)
-    main                                     0x000168df   Thumb Code    64  main.o(.text)
-    ble_sm_on_ble_evt                        0x00016f2d   Thumb Code    58  app_state_machine.o(.text)
-    ble_sm_init                              0x00016f67   Thumb Code   158  app_state_machine.o(.text)
-    ble_sm_state_update                      0x00017005   Thumb Code     6  app_state_machine.o(.text)
-    pstorage_sys_event_handler               0x00017547   Thumb Code   326  pstorage.o(.text)
-    pstorage_init                            0x0001768d   Thumb Code   196  pstorage.o(.text)
-    pstorage_register                        0x00017751   Thumb Code   360  pstorage.o(.text)
-    pstorage_block_identifier_get            0x000178b9   Thumb Code   136  pstorage.o(.text)
-    pstorage_store                           0x00017941   Thumb Code   202  pstorage.o(.text)
-    pstorage_update                          0x00017a0b   Thumb Code   202  pstorage.o(.text)
-    pstorage_load                            0x00017ad5   Thumb Code   226  pstorage.o(.text)
-    pstorage_clear                           0x00017bb7   Thumb Code   184  pstorage.o(.text)
-    pstorage_access_status_get               0x00017c6f   Thumb Code    36  pstorage.o(.text)
-    ble_advdata_set                          0x0001821d   Thumb Code   122  ble_advdata.o(.text)
-    app_sched_init                           0x000182ad   Thumb Code    66  app_scheduler.o(.text)
-    app_sched_event_put                      0x000182ef   Thumb Code   238  app_scheduler.o(.text)
-    app_sched_execute                        0x00018431   Thumb Code    30  app_scheduler.o(.text)
-    RTC1_IRQHandler                          0x00018ce7   Thumb Code    34  app_timer.o(.text)
-    SWI0_IRQHandler                          0x00018d09   Thumb Code     8  app_timer.o(.text)
-    app_timer_init                           0x00018d11   Thumb Code   250  app_timer.o(.text)
-    app_timer_create                         0x00018e0b   Thumb Code   108  app_timer.o(.text)
-    app_timer_start                          0x00018e99   Thumb Code    98  app_timer.o(.text)
-    app_timer_stop                           0x00018efb   Thumb Code    60  app_timer.o(.text)
-    app_timer_stop_all                       0x00018f37   Thumb Code    26  app_timer.o(.text)
-    app_timer_cnt_get                        0x00018f51   Thumb Code    14  app_timer.o(.text)
-    app_timer_cnt_diff_compute               0x00018f5f   Thumb Code    22  app_timer.o(.text)
-    ble_conn_params_init                     0x000190db   Thumb Code    90  ble_conn_params.o(.text)
-    ble_conn_params_stop                     0x00019135   Thumb Code    12  ble_conn_params.o(.text)
-    ble_conn_params_on_ble_evt               0x00019283   Thumb Code    62  ble_conn_params.o(.text)
-    ble_conn_params_change_conn_params       0x000192c1   Thumb Code    86  ble_conn_params.o(.text)
-    softdevice_assertion_handler             0x0001933d   Thumb Code    18  softdevice_handler.o(.text)
-    intern_softdevice_events_execute         0x0001934f   Thumb Code   168  softdevice_handler.o(.text)
-    softdevice_handler_init                  0x000193f7   Thumb Code    84  softdevice_handler.o(.text)
-    softdevice_handler_sd_disable            0x0001944b   Thumb Code    24  softdevice_handler.o(.text)
-    softdevice_ble_evt_handler_set           0x00019463   Thumb Code    18  softdevice_handler.o(.text)
-    softdevice_sys_evt_handler_set           0x00019475   Thumb Code    18  softdevice_handler.o(.text)
-    SWI2_IRQHandler                          0x00019487   Thumb Code    52  softdevice_handler.o(.text)
-    app_button_init                          0x00019627   Thumb Code   132  app_button.o(.text)
-    app_button_enable                        0x000196ab   Thumb Code    24  app_button.o(.text)
-    app_button_disable                       0x000196c3   Thumb Code    42  app_button.o(.text)
-    app_button_is_pushed                     0x000196ed   Thumb Code   108  app_button.o(.text)
-    GPIOTE_IRQHandler                        0x0001982d   Thumb Code   158  app_gpiote.o(.text)
-    app_gpiote_init                          0x0001992d   Thumb Code   116  app_gpiote.o(.text)
-    app_gpiote_user_register                 0x000199a1   Thumb Code   138  app_gpiote.o(.text)
-    app_gpiote_user_enable                   0x00019a2b   Thumb Code   226  app_gpiote.o(.text)
-    app_gpiote_user_disable                  0x00019b0d   Thumb Code    66  app_gpiote.o(.text)
-    app_gpiote_pins_state_get                0x00019b4f   Thumb Code    52  app_gpiote.o(.text)
-    ble_debug_assert_handler                 0x00019c19   Thumb Code    46  ble_debug_assert_handler.o(.text)
-    ProcessEvents                            0x00019fa3   Thumb Code    98  alpine_tl_state_machine.o(.text)
-    RegularTimerDone                         0x0001a031   Thumb Code    12  alpine_tl_state_machine.o(.text)
-    PeripheralTimerDone                      0x0001a03d   Thumb Code   180  alpine_tl_state_machine.o(.text)
-    StartupStateMachine                      0x0001a107   Thumb Code    20  alpine_tl_state_machine.o(.text)
-    init_alpine_pins                         0x0001a139   Thumb Code   148  alpine_boards.o(.text)
-    InitStepperPins                          0x0001a1f5   Thumb Code    52  radian_stepper.o(.text)
-    SetStepperPWM                            0x0001a229   Thumb Code     2  radian_stepper.o(.text)
-    Brake                                    0x0001a22b   Thumb Code    40  radian_stepper.o(.text)
-    Step                                     0x0001a253   Thumb Code   152  radian_stepper.o(.text)
-    EnableStepper                            0x0001a2eb   Thumb Code    16  radian_stepper.o(.text)
-    DisableStepper                           0x0001a2fb   Thumb Code    16  radian_stepper.o(.text)
-    __aeabi_uidiv                            0x0001a339   Thumb Code     0  uidiv.o(.text)
-    __aeabi_uidivmod                         0x0001a339   Thumb Code    44  uidiv.o(.text)
-    __aeabi_idiv                             0x0001a365   Thumb Code     0  idiv.o(.text)
-    __aeabi_idivmod                          0x0001a365   Thumb Code    40  idiv.o(.text)
-    __aeabi_memcpy                           0x0001a38d   Thumb Code    36  memcpya.o(.text)
-    __aeabi_memcpy4                          0x0001a38d   Thumb Code     0  memcpya.o(.text)
-    __aeabi_memcpy8                          0x0001a38d   Thumb Code     0  memcpya.o(.text)
-    __aeabi_memset                           0x0001a3b1   Thumb Code    14  memseta.o(.text)
-    __aeabi_memset4                          0x0001a3b1   Thumb Code     0  memseta.o(.text)
-    __aeabi_memset8                          0x0001a3b1   Thumb Code     0  memseta.o(.text)
-    __aeabi_memclr                           0x0001a3bf   Thumb Code     4  memseta.o(.text)
-    __aeabi_memclr4                          0x0001a3bf   Thumb Code     0  memseta.o(.text)
-    __aeabi_memclr8                          0x0001a3bf   Thumb Code     0  memseta.o(.text)
-    _memset$wrapper                          0x0001a3c3   Thumb Code    18  memseta.o(.text)
-    strncpy                                  0x0001a3d5   Thumb Code    26  strncpy.o(.text)
-    __scatterload                            0x0001a3f1   Thumb Code    28  init.o(.text)
-    __scatterload_rt2                        0x0001a3f1   Thumb Code     0  init.o(.text)
-    __decompress                             0x0001a415   Thumb Code     0  __dczerorl.o(.text)
-    __decompress0                            0x0001a415   Thumb Code    58  __dczerorl.o(.text)
-    __ARM_common_switch8                     0x0001a44f   Thumb Code    28  pstorage.o(i.__ARM_common_switch8)
-    __scatterload_copy                       0x0001a46b   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x0001a479   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x0001a47b   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    Region$$Table$$Base                      0x0001a49c   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x0001a4ac   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x000168fb   Thumb Code    64  main.o(.text)
+    ble_sm_on_ble_evt                        0x00016f49   Thumb Code    58  app_state_machine.o(.text)
+    ble_sm_init                              0x00016f83   Thumb Code   158  app_state_machine.o(.text)
+    ble_sm_state_update                      0x00017021   Thumb Code     6  app_state_machine.o(.text)
+    pstorage_sys_event_handler               0x00017563   Thumb Code   326  pstorage.o(.text)
+    pstorage_init                            0x000176a9   Thumb Code   196  pstorage.o(.text)
+    pstorage_register                        0x0001776d   Thumb Code   360  pstorage.o(.text)
+    pstorage_block_identifier_get            0x000178d5   Thumb Code   136  pstorage.o(.text)
+    pstorage_store                           0x0001795d   Thumb Code   202  pstorage.o(.text)
+    pstorage_update                          0x00017a27   Thumb Code   202  pstorage.o(.text)
+    pstorage_load                            0x00017af1   Thumb Code   226  pstorage.o(.text)
+    pstorage_clear                           0x00017bd3   Thumb Code   184  pstorage.o(.text)
+    pstorage_access_status_get               0x00017c8b   Thumb Code    36  pstorage.o(.text)
+    ble_advdata_set                          0x00018239   Thumb Code   122  ble_advdata.o(.text)
+    app_sched_init                           0x000182c9   Thumb Code    66  app_scheduler.o(.text)
+    app_sched_event_put                      0x0001830b   Thumb Code   238  app_scheduler.o(.text)
+    app_sched_execute                        0x0001844d   Thumb Code    30  app_scheduler.o(.text)
+    RTC1_IRQHandler                          0x00018d03   Thumb Code    34  app_timer.o(.text)
+    SWI0_IRQHandler                          0x00018d25   Thumb Code     8  app_timer.o(.text)
+    app_timer_init                           0x00018d2d   Thumb Code   250  app_timer.o(.text)
+    app_timer_create                         0x00018e27   Thumb Code   108  app_timer.o(.text)
+    app_timer_start                          0x00018eb5   Thumb Code    98  app_timer.o(.text)
+    app_timer_stop                           0x00018f17   Thumb Code    60  app_timer.o(.text)
+    app_timer_stop_all                       0x00018f53   Thumb Code    26  app_timer.o(.text)
+    app_timer_cnt_get                        0x00018f6d   Thumb Code    14  app_timer.o(.text)
+    app_timer_cnt_diff_compute               0x00018f7b   Thumb Code    22  app_timer.o(.text)
+    ble_conn_params_init                     0x000190f7   Thumb Code    90  ble_conn_params.o(.text)
+    ble_conn_params_stop                     0x00019151   Thumb Code    12  ble_conn_params.o(.text)
+    ble_conn_params_on_ble_evt               0x0001929f   Thumb Code    62  ble_conn_params.o(.text)
+    ble_conn_params_change_conn_params       0x000192dd   Thumb Code    86  ble_conn_params.o(.text)
+    softdevice_assertion_handler             0x00019359   Thumb Code    18  softdevice_handler.o(.text)
+    intern_softdevice_events_execute         0x0001936b   Thumb Code   168  softdevice_handler.o(.text)
+    softdevice_handler_init                  0x00019413   Thumb Code    84  softdevice_handler.o(.text)
+    softdevice_handler_sd_disable            0x00019467   Thumb Code    24  softdevice_handler.o(.text)
+    softdevice_ble_evt_handler_set           0x0001947f   Thumb Code    18  softdevice_handler.o(.text)
+    softdevice_sys_evt_handler_set           0x00019491   Thumb Code    18  softdevice_handler.o(.text)
+    SWI2_IRQHandler                          0x000194a3   Thumb Code    52  softdevice_handler.o(.text)
+    app_button_init                          0x00019643   Thumb Code   132  app_button.o(.text)
+    app_button_enable                        0x000196c7   Thumb Code    24  app_button.o(.text)
+    app_button_disable                       0x000196df   Thumb Code    42  app_button.o(.text)
+    app_button_is_pushed                     0x00019709   Thumb Code   108  app_button.o(.text)
+    GPIOTE_IRQHandler                        0x00019849   Thumb Code   158  app_gpiote.o(.text)
+    app_gpiote_init                          0x00019949   Thumb Code   116  app_gpiote.o(.text)
+    app_gpiote_user_register                 0x000199bd   Thumb Code   138  app_gpiote.o(.text)
+    app_gpiote_user_enable                   0x00019a47   Thumb Code   226  app_gpiote.o(.text)
+    app_gpiote_user_disable                  0x00019b29   Thumb Code    66  app_gpiote.o(.text)
+    app_gpiote_pins_state_get                0x00019b6b   Thumb Code    52  app_gpiote.o(.text)
+    ble_debug_assert_handler                 0x00019c35   Thumb Code    46  ble_debug_assert_handler.o(.text)
+    ProcessEvents                            0x00019fbf   Thumb Code    98  alpine_tl_state_machine.o(.text)
+    AddEventToTlSmQueue                      0x0001a021   Thumb Code    44  alpine_tl_state_machine.o(.text)
+    RegularTimerDone                         0x0001a04d   Thumb Code    12  alpine_tl_state_machine.o(.text)
+    PeripheralTimerDone                      0x0001a059   Thumb Code   180  alpine_tl_state_machine.o(.text)
+    StartupStateMachine                      0x0001a123   Thumb Code    20  alpine_tl_state_machine.o(.text)
+    Tl_pkt_is_good                           0x0001a137   Thumb Code    72  alpine_tl_state_machine.o(.text)
+    init_alpine_pins                         0x0001a19d   Thumb Code   148  alpine_boards.o(.text)
+    InitStepperPins                          0x0001a259   Thumb Code    52  radian_stepper.o(.text)
+    SetStepperPWM                            0x0001a28d   Thumb Code     2  radian_stepper.o(.text)
+    Brake                                    0x0001a28f   Thumb Code    40  radian_stepper.o(.text)
+    Step                                     0x0001a2b7   Thumb Code   152  radian_stepper.o(.text)
+    EnableStepper                            0x0001a34f   Thumb Code    16  radian_stepper.o(.text)
+    DisableStepper                           0x0001a35f   Thumb Code    16  radian_stepper.o(.text)
+    __aeabi_uidiv                            0x0001a39d   Thumb Code     0  uidiv.o(.text)
+    __aeabi_uidivmod                         0x0001a39d   Thumb Code    44  uidiv.o(.text)
+    __aeabi_idiv                             0x0001a3c9   Thumb Code     0  idiv.o(.text)
+    __aeabi_idivmod                          0x0001a3c9   Thumb Code    40  idiv.o(.text)
+    __aeabi_memcpy                           0x0001a3f1   Thumb Code    36  memcpya.o(.text)
+    __aeabi_memcpy4                          0x0001a3f1   Thumb Code     0  memcpya.o(.text)
+    __aeabi_memcpy8                          0x0001a3f1   Thumb Code     0  memcpya.o(.text)
+    __aeabi_memset                           0x0001a415   Thumb Code    14  memseta.o(.text)
+    __aeabi_memset4                          0x0001a415   Thumb Code     0  memseta.o(.text)
+    __aeabi_memset8                          0x0001a415   Thumb Code     0  memseta.o(.text)
+    __aeabi_memclr                           0x0001a423   Thumb Code     4  memseta.o(.text)
+    __aeabi_memclr4                          0x0001a423   Thumb Code     0  memseta.o(.text)
+    __aeabi_memclr8                          0x0001a423   Thumb Code     0  memseta.o(.text)
+    _memset$wrapper                          0x0001a427   Thumb Code    18  memseta.o(.text)
+    strncpy                                  0x0001a439   Thumb Code    26  strncpy.o(.text)
+    __scatterload                            0x0001a455   Thumb Code    28  init.o(.text)
+    __scatterload_rt2                        0x0001a455   Thumb Code     0  init.o(.text)
+    __decompress                             0x0001a479   Thumb Code     0  __dczerorl.o(.text)
+    __decompress0                            0x0001a479   Thumb Code    58  __dczerorl.o(.text)
+    __ARM_common_switch8                     0x0001a4b3   Thumb Code    28  pstorage.o(i.__ARM_common_switch8)
+    __scatterload_copy                       0x0001a4cf   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x0001a4dd   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x0001a4df   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    Region$$Table$$Base                      0x0001a500   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x0001a510   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20002000   Data           4  system_nrf51.o(.data)
     Event_queue                              0x200020c4   Data          10  alpine_tl_state_machine.o(.data)
     Event_q_index                            0x200020ce   Data           1  alpine_tl_state_machine.o(.data)
@@ -644,9 +645,9 @@ Memory Map of the image
 
   Image Entry point : 0x000160c1
 
-  Load Region LR_IROM1 (Base: 0x00016000, Size: 0x000045f0, Max: 0x00024000, ABSOLUTE, COMPRESSED[0x000044e0])
+  Load Region LR_IROM1 (Base: 0x00016000, Size: 0x00004654, Max: 0x00024000, ABSOLUTE, COMPRESSED[0x00004544])
 
-    Execution Region ER_IROM1 (Base: 0x00016000, Size: 0x000044ac, Max: 0x00024000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x00016000, Size: 0x00004510, Max: 0x00024000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -664,36 +665,36 @@ Memory Map of the image
     0x000160f2   0x00000002   PAD
     0x000160f4   0x00000038   Code   RO            4    .text               arm_startup_nrf51.o
     0x0001612c   0x000000e8   Code   RO           12    .text               system_nrf51.o
-    0x00016214   0x00000850   Code   RO           69    .text               main.o
-    0x00016a64   0x000005b0   Code   RO          282    .text               app_state_machine.o
-    0x00017014   0x00000c98   Code   RO          381    .text               pstorage.o
-    0x00017cac   0x00000600   Code   RO          441    .text               ble_advdata.o
-    0x000182ac   0x00000264   Code   RO          482    .text               app_scheduler.o
-    0x00018510   0x00000b24   Code   RO          520    .text               app_timer.o
-    0x00019034   0x00000308   Code   RO          564    .text               ble_conn_params.o
-    0x0001933c   0x000001d4   Code   RO          600    .text               softdevice_handler.o
-    0x00019510   0x0000029c   Code   RO          637    .text               app_button.o
-    0x000197ac   0x0000046c   Code   RO          671    .text               app_gpiote.o
-    0x00019c18   0x0000003c   Code   RO          702    .text               ble_debug_assert_handler.o
-    0x00019c54   0x000004e4   Code   RO          730    .text               alpine_tl_state_machine.o
-    0x0001a138   0x000000ba   Code   RO          760    .text               alpine_boards.o
-    0x0001a1f2   0x00000002   PAD
-    0x0001a1f4   0x00000144   Code   RO          783    .text               radian_stepper.o
-    0x0001a338   0x0000002c   Code   RO          808    .text               mc_p.l(uidiv.o)
-    0x0001a364   0x00000028   Code   RO          810    .text               mc_p.l(idiv.o)
-    0x0001a38c   0x00000024   Code   RO          812    .text               mc_p.l(memcpya.o)
-    0x0001a3b0   0x00000024   Code   RO          814    .text               mc_p.l(memseta.o)
-    0x0001a3d4   0x0000001a   Code   RO          816    .text               mc_p.l(strncpy.o)
-    0x0001a3ee   0x00000002   PAD
-    0x0001a3f0   0x00000024   Code   RO          836    .text               mc_p.l(init.o)
-    0x0001a414   0x0000003a   Code   RO          846    .text               mc_p.l(__dczerorl.o)
-    0x0001a44e   0x0000001c   Code   RO          399    i.__ARM_common_switch8  pstorage.o
-    0x0001a46a   0x0000000e   Code   RO          840    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x0001a478   0x00000002   Code   RO          841    i.__scatterload_null  mc_p.l(handlers.o)
-    0x0001a47a   0x0000000e   Code   RO          842    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x0001a488   0x00000004   Data   RO           71    .constdata          main.o
-    0x0001a48c   0x00000010   Data   RO          283    .constdata          app_state_machine.o
-    0x0001a49c   0x00000010   Data   RO          838    Region$$Table       anon$$obj.o
+    0x00016214   0x0000086c   Code   RO           69    .text               main.o
+    0x00016a80   0x000005b0   Code   RO          282    .text               app_state_machine.o
+    0x00017030   0x00000c98   Code   RO          381    .text               pstorage.o
+    0x00017cc8   0x00000600   Code   RO          441    .text               ble_advdata.o
+    0x000182c8   0x00000264   Code   RO          482    .text               app_scheduler.o
+    0x0001852c   0x00000b24   Code   RO          520    .text               app_timer.o
+    0x00019050   0x00000308   Code   RO          564    .text               ble_conn_params.o
+    0x00019358   0x000001d4   Code   RO          600    .text               softdevice_handler.o
+    0x0001952c   0x0000029c   Code   RO          637    .text               app_button.o
+    0x000197c8   0x0000046c   Code   RO          671    .text               app_gpiote.o
+    0x00019c34   0x0000003c   Code   RO          702    .text               ble_debug_assert_handler.o
+    0x00019c70   0x0000052c   Code   RO          730    .text               alpine_tl_state_machine.o
+    0x0001a19c   0x000000ba   Code   RO          760    .text               alpine_boards.o
+    0x0001a256   0x00000002   PAD
+    0x0001a258   0x00000144   Code   RO          783    .text               radian_stepper.o
+    0x0001a39c   0x0000002c   Code   RO          808    .text               mc_p.l(uidiv.o)
+    0x0001a3c8   0x00000028   Code   RO          810    .text               mc_p.l(idiv.o)
+    0x0001a3f0   0x00000024   Code   RO          812    .text               mc_p.l(memcpya.o)
+    0x0001a414   0x00000024   Code   RO          814    .text               mc_p.l(memseta.o)
+    0x0001a438   0x0000001a   Code   RO          816    .text               mc_p.l(strncpy.o)
+    0x0001a452   0x00000002   PAD
+    0x0001a454   0x00000024   Code   RO          836    .text               mc_p.l(init.o)
+    0x0001a478   0x0000003a   Code   RO          846    .text               mc_p.l(__dczerorl.o)
+    0x0001a4b2   0x0000001c   Code   RO          399    i.__ARM_common_switch8  pstorage.o
+    0x0001a4ce   0x0000000e   Code   RO          840    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x0001a4dc   0x00000002   Code   RO          841    i.__scatterload_null  mc_p.l(handlers.o)
+    0x0001a4de   0x0000000e   Code   RO          842    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x0001a4ec   0x00000004   Data   RO           71    .constdata          main.o
+    0x0001a4f0   0x00000010   Data   RO          283    .constdata          app_state_machine.o
+    0x0001a500   0x00000010   Data   RO          838    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20002000, Size: 0x00001148, Max: 0x00002000, ABSOLUTE, UNINIT, COMPRESSED[0x00000034])
@@ -733,7 +734,7 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        186          0          0          0          0       2943   alpine_boards.o
-      1252        178          0        121         90       8893   alpine_tl_state_machine.o
+      1324        178          0        121         90       9336   alpine_tl_state_machine.o
        668         84          0         32          0       8876   app_button.o
       1132         40          0         12          0      11878   app_gpiote.o
        612         90          0         14          0      12451   app_scheduler.o
@@ -744,14 +745,14 @@ Image component sizes
        776         38          0         25         28      14226   ble_conn_params.o
         60         14          0          8        128       1391   ble_debug_assert_handler.o
          0          0          0          0          0       4100   ble_srv_common.o
-      2128        274          4         20       1168      55553   main.o
+      2156        274          4         20       1168      55569   main.o
       3252         90          0         12        636      12398   pstorage.o
        324          8          0          4          0       3752   radian_stepper.o
        468         86          0         20          0       9260   softdevice_handler.o
        232         30          0          4          0      21601   system_nrf51.o
 
     ----------------------------------------------------------------------
-     17024       1172        228        324       4100     266217   Object Totals
+     17124       1172        228        324       4100     266676   Object Totals
          0          0         16          0          0          0   (incl. Generated)
          4          0          0         11          2          0   (incl. Padding)
 
@@ -796,15 +797,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     17352       1188        228        324       4100     265905   Grand Totals
-     17352       1188        228         52       4100     265905   ELF Image Totals (compressed)
-     17352       1188        228         52          0          0   ROM Totals
+     17452       1188        228        324       4100     266364   Grand Totals
+     17452       1188        228         52       4100     266364   ELF Image Totals (compressed)
+     17452       1188        228         52          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                17580 (  17.17kB)
+    Total RO  Size (Code + RO Data)                17680 (  17.27kB)
     Total RW  Size (RW Data + ZI Data)              4424 (   4.32kB)
-    Total ROM Size (Code + RO Data + RW Data)      17632 (  17.22kB)
+    Total ROM Size (Code + RO Data + RW Data)      17732 (  17.32kB)
 
 ==============================================================================
 

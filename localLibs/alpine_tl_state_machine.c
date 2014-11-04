@@ -360,6 +360,15 @@ static void MovingState(struct Evt_struct event_struct){
 	
 }//end MovingState()
 
+
+void ProcessingRemoteControlState(struct Evt_struct event){
+	
+	if(event.val1 == 1){ G_STAT_LED_ON; }
+	else G_STAT_LED_OFF;
+
+}
+
+
 /* -------------STATE MACHINE HANDLING-------------------------------*/
 
 /*
@@ -398,6 +407,10 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 	
 	uint8_t evt_type = event.event_type; 
 	
+	if(event.event_type == SHUTTER_CMD_EVT){
+		Curr_state = REMOTE_CNTRL_STATE;
+	}
+	
 	if(Curr_state == TURNING_OFF_STATE){
 		//TurningOffState(event);
 	}else if(Curr_state == TAKING_PHOTO_STATE){
@@ -410,6 +423,8 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 		//ChargingSate(event)
 	}else if(Curr_state == PROCESSING_PACKET_STATE){
 		ProcessingPacketState(event);
+	}else if( Curr_state == REMOTE_CNTRL_STATE){
+		ProcessingRemoteControlState(event);
 	}
 	
 }

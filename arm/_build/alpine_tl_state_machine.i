@@ -11548,7 +11548,7 @@ typedef struct Evt_struct {
 
 
 
-#line 34 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 35 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
 
@@ -11562,13 +11562,13 @@ typedef struct Evt_struct {
 
 
 
-#line 54 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 55 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
 
 
 
-#line 66 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 67 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
 
@@ -15075,6 +15075,15 @@ static void MovingState(struct Evt_struct event_struct){
 	
 }
 
+
+void ProcessingRemoteControlState(struct Evt_struct event){
+	
+	if(event.val1 == 1){ { nrf_gpio_pin_clear(22); }; }
+	else { nrf_gpio_pin_set(22); };
+
+}
+
+
  
 
 
@@ -15113,6 +15122,10 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 	
 	uint8_t evt_type = event.event_type; 
 	
+	if(event.event_type == 6){
+		Curr_state = 7;
+	}
+	
 	if(Curr_state == 2){
 		
 	}else if(Curr_state == 1){
@@ -15125,6 +15138,8 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 		
 	}else if(Curr_state == 6){
 		ProcessingPacketState(event);
+	}else if( Curr_state == 7){
+		ProcessingRemoteControlState(event);
 	}
 	
 }

@@ -31,6 +31,7 @@ typedef struct Evt_struct {
 #define MOVING_STATE				4
 #define CHARGING_ONLY_STATE	5
 #define PROCESSING_PACKET_STATE	6
+#define REMOTE_CNTRL_STATE	7	//under control from smartphone, not executing a TL
 
 //moving sub states
 #define START_STEP_SUB	1

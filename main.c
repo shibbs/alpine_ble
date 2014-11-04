@@ -262,6 +262,7 @@ static void advertising_init(void)
 static void shutter_write_handler(ble_sm_t * p_ble_sm, uint8_t* array_in)
 {
 	uint8_t shutter_cmd = array_in[0];
+	G_STAT_LED_ON; //turn the LED on
 	//throw an event that the shutter write handler was called, and pass through the first 2 bytes of the inbound data
 	AddEventToTlSmQueue_extern(SHUTTER_CMD_EVT, array_in[0], array_in[1] );
 }

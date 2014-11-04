@@ -262,14 +262,8 @@ static void advertising_init(void)
 static void shutter_write_handler(ble_sm_t * p_ble_sm, uint8_t* array_in)
 {
 	uint8_t shutter_cmd = array_in[0];
-	if (shutter_cmd ==1)
-	{
-
-	}
-	else
-	{
-
-	}
+	//throw an event that the shutter write handler was called, and pass through the first 2 bytes of the inbound data
+	AddEventToTlSmQueue_extern(SHUTTER_CMD_EVT, array_in[0], array_in[1] );
 }
 
 /**@brief Function for handling writes to the Timelapse packet characteristic
@@ -290,8 +284,8 @@ static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 	
 	//check if we are on the last packet. If so then we need to check the checksum and that the last value flag is in the right place
 	if(packet_num == num_packets){
-		if( Tl_pkt_is_good( tl_pkt ) ) AddEventToTlSmQueue(NEW_PACKET_EVT);
-		//else we need to return an error indicating that the packet was not recieved properly
+		if( Tl_pkt_is_good( tl_pkt ) ) AddEventToTlSmQueue_extern(NEW_PACKET_EVT,GOOD_PKT,0); //alert the tl state machine that a good packet was recieved
+		else  AddEventToTlSmQueue_extern(NEW_PACKET_EVT,BAD_PKT,0); //aler the TL stat machine that a bad packet was recieved
 	}
 	else if (packet_num ==0) //if this is the first packet, then we need to get some information from it
 	{

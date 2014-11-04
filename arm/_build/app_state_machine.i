@@ -4122,7 +4122,22 @@ void ble_srv_ascii_to_utf8(ble_srv_utf8_str_t * p_utf8, char * p_ascii);
 
 
 
-#line 25 "..\\localLibs\\app_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -14667,16 +14682,12 @@ void init_alpine_pins(void);
 
 
 
-
-
-
-
-#line 23 "..\\localLibs\\alpine_tl_state_machine.h"
-
-
-
-
-
+typedef struct Evt_struct {
+	uint8_t event_type; 
+	uint8_t last_state; 
+	uint16_t val1; 
+	uint8_t val2;
+};
 
 
 
@@ -14684,10 +14695,31 @@ void init_alpine_pins(void);
 
 
 
-#line 41 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
-#line 50 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 34 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 54 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+#line 66 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
 
 
 
@@ -14697,7 +14729,7 @@ void init_alpine_pins(void);
 
 void StartupStateMachine();
 _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
-void AddEventToTlSmQueue( char event);
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
 
 
 

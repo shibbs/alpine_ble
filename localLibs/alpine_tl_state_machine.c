@@ -18,7 +18,7 @@
 
 
 //start us out with a null queue, except for a power toggle event to kick us off
-unsigned char Event_queue [EVENT_QUEUE_SIZE] = { POWER_TOGGLE_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT,NULL_EVT};
+struct Evt_struct Event_queue [EVENT_QUEUE_SIZE];// = { NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT,NULL_EVT_STRUCT};
 unsigned char Event_q_index=0;
 
 unsigned char Current_packet [TL_PACKET_MAX_LEN];
@@ -80,7 +80,8 @@ app_timer_id_t										EventClearTimer; //called periodically to make sure we h
 
 //function declarations
 static void InitForNewTL(void);
-static void HandleStateMachineEvent( char event);
+static void HandleStateMachineEvent( struct Evt_struct event);
+static void AddEventToTlSmQueue_intern( uint8_t event_type);
 
 
 /* ------------ TIMERS -------------------------------*/
@@ -88,12 +89,12 @@ static void HandleStateMachineEvent( char event);
 
 //regular timer callback functtion
  void RegularTimerDone(void * nil){
-	AddEventToTlSmQueue(TIMER1_EVT);
+	AddEventToTlSmQueue_intern(TIMER1_EVT);
 	
 }
 //peripheral timer callback functtion
 void PeripheralTimerDone(void * nil){
-	AddEventToTlSmQueue(TIMER2_EVT);
+	AddEventToTlSmQueue_intern(TIMER2_EVT);
 }
 
 /*This is the timer function
@@ -103,7 +104,7 @@ if it gets a 0, should just fire event right away
 static void SetTimer(unsigned long time){
 	uint32_t err_code;
 	if(time == 0){
-		AddEventToTlSmQueue(TIMER1_EVT);
+		AddEventToTlSmQueue_intern(TIMER1_EVT);
 		return;
 	}
 	//we will want to add some code to correct for the slight error in timing. Currently we assume a 32Khz clock, but really it's 32.768KHz
@@ -118,7 +119,7 @@ if it gets a 0, should just fire event right away
 */
 static void SetPeripheralTimer(unsigned long time){
 	if(time == 0){
-		AddEventToTlSmQueue(TIMER1_EVT);
+		AddEventToTlSmQueue_intern(TIMER1_EVT);
 		return;
 	}
 }
@@ -223,9 +224,9 @@ peripheral state machine handles non-TL things like :
 battery LED status, connection made status, display upload success
 Events we can expect are TIMER2_EVT , GOOD_PACKET_EVT , BLE_CONN_EVT
 */
-static void HandlePeripheralEvent( char event);
+static void HandlePeripheralEvent( struct Evt_struct event_struct );
 
-
+/** --------------------------------State Machiine Event Handlers!! -----------------------------    **/
 
 /*
 state machine handler for the processing packet state
@@ -233,10 +234,10 @@ we  get here  after power toggled on, or when new packet comes in.
 we want to either go to sleep if we are not suppsed to execute on start or we should
 process the current timelapse settings, and set up the front delay timer and go into front delay state
 */
-static void ProcessingPacketState(char event){
+static void ProcessingPacketState(struct Evt_struct event_struct){
 	//run basic check on packet
 	//if not startup then save to EEprom
-	if(event != NEW_PACKET_EVT && event != POWER_TOGGLE_EVT) return;
+	if(event_struct.event_type != NEW_PACKET_EVT && event_struct.event_type != POWER_TOGGLE_EVT) return;
 	
 	if(Current_packet[0] == TL_PACKET_START_FLAG) { // if we seem to have a valid packet : 
 		ParsePacketPreamble(); //parse the values at the front of the packet
@@ -256,7 +257,7 @@ static void ProcessingPacketState(char event){
 
 //we get here after waiting the front delay time, at the start of a new TL
 //we need to update the cycle settings, and move us to the take a photo state
-static void FrontDelayState(char event){
+static void FrontDelayState(struct Evt_struct event_struct){
 	Curr_state = TAKING_PHOTO_STATE;
 	Preload_flag = 0; //preload set off
 	//FLAG SAH removed below line since currently the preload logic is all wrong
@@ -290,12 +291,12 @@ static void HandleShutterDone(){
 This is the state in which we control the taking of a photo.
 
 */
-static void TakingPhotoState(char event){
+static void TakingPhotoState(struct Evt_struct event_struct){
 	//this is our substate which will track where we are in this state. When we are done we should always revert it to OPEN_SHUTTER_SUB
 	static char sub_state = SHUTTER_LED_SUB;
-
+	
 	//check if this event is relevant first, if not then exit out
-	if(event != TIMER1_EVT && event != PC_SYNC_CHANGE_EVT) return;
+	if(event_struct.event_type != TIMER1_EVT && event_struct.event_type != PC_SYNC_CHANGE_EVT) return;
 			
 	if( sub_state == SHUTTER_LED_SUB){
 		G_STAT_LED_ON;
@@ -329,12 +330,12 @@ static void TakingPhotoState(char event){
 	The start step sub state turns the motor on to full, and sets a timer for the amount of time to keep the motor on full
 	The hold step sub state turns the motor to idle for the remainder of ther step time. If we are done with steps the next sub is Exit sub, else we go back to start step sub
 */
-static void MovingState(char event){
+static void MovingState(struct Evt_struct event_struct){
 	static char sub_state = START_STEP_SUB; //start us with start step
 	static char num_steps_taken = 0;
 	
 	//check if this event is relevant first, if not then exit out
-	if(event != TIMER1_EVT) return;
+	if(event_struct.event_type != TIMER1_EVT) return;
   
 	if(sub_state == START_STEP_SUB){
 		SetStepperPWM(Drive_duty);//set motor pwm for stepping
@@ -362,12 +363,29 @@ static void MovingState(char event){
 /* -------------STATE MACHINE HANDLING-------------------------------*/
 
 /*
+This function is called externally to the state machine
 adds events to the alpine_tl_sm queue
 */
-void AddEventToTlSmQueue( char event){
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2){
 	static 	void * nil; //needed for calling processEvents
-	if(Event_queue[Event_q_index] != NULL_EVT) Event_q_index ++; //check for if we're on 0th val and it's null
-	Event_queue[Event_q_index] = event;
+	struct Evt_struct event_struct = {event_type,EXTERN_EVT_STATE ,data1,data2 } ; //create the event struct
+	
+	if(Event_queue[Event_q_index].event_type != NULL_EVT) Event_q_index ++; //check for if we're on 0th val and it's null
+	Event_queue[Event_q_index] = event_struct;
+	ProcessEvents( nil);
+}
+
+/*
+adds events to the alpine_tl_sm queue
+//takes in the event type, the first value, and the second value
+*/
+static void AddEventToTlSmQueue_intern( uint8_t event_type){
+	static 	void * nil; //needed for calling processEvents
+	struct Evt_struct event_struct = {event_type,Curr_state ,0,0 } ; //create the event struct
+	
+	if(Event_queue[Event_q_index].event_type != NULL_EVT) Event_q_index ++; //check for if we're on 0th val and it's null
+	
+	Event_queue[Event_q_index] = event_struct;
 	ProcessEvents( nil);
 }
 
@@ -376,7 +394,9 @@ handles regular state machine events.
 Events we can expect are : NEW_PACKET_EVT , TIMER1_EVT , PC_SYNC_EVT , POWER_TOGGLE_EVT
 will just be a large switch statement that calls handler functions
 */
-static void HandleStateMachineEvent( char event){
+static void HandleStateMachineEvent( struct Evt_struct event){
+	
+	uint8_t evt_type = event.event_type; 
 	
 	if(Curr_state == TURNING_OFF_STATE){
 		//TurningOffState(event);
@@ -398,17 +418,18 @@ static void HandleStateMachineEvent( char event){
 	Called periodically to push out any unhandled events from our FIFO queue
 */
 void ProcessEvents(void* nil){
-	char event; 
-	static char i;
+	static struct Evt_struct event; 
+	static uint8_t i;
+	static struct Evt_struct null_evt_struct = {NULL_EVT,0,0,0}; //create a default "null event
 	
 	event = Event_queue[0]; //get the event
 	//move through the queue and slide everything down
 	for( i = 0; i < Event_q_index; i++){
 			Event_queue[i] = Event_queue[i+1];
 	}
-	Event_queue[Event_q_index] = NULL_EVT; //set this slot to now be a null event to be sure we clear it
+	Event_queue[Event_q_index] = null_evt_struct; //set this slot to now be a null event to be sure we clear it
 	if(Event_q_index > 0) Event_q_index--;
-	if(event ==NULL_EVT) return; //if our event is null then exit out
+	if(event.event_type ==NULL_EVT) return; //if our event is null then exit out
 	HandleStateMachineEvent( event );
 }
 
@@ -424,7 +445,7 @@ static void GetEepromValues(){
 void StartupStateMachine(){
 	GetEepromValues();
 	Curr_state = PROCESSING_PACKET_STATE;
-	AddEventToTlSmQueue( POWER_TOGGLE_EVT ); //adds power toggle event to the queue
+	AddEventToTlSmQueue_intern( POWER_TOGGLE_EVT ); //adds power toggle event to the queue
 }
 
 

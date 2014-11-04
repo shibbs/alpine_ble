@@ -11533,16 +11533,12 @@ void init_alpine_pins(void);
 
 
 
-
-
-
-
-#line 23 "..\\localLibs\\alpine_tl_state_machine.h"
-
-
-
-
-
+typedef struct Evt_struct {
+	uint8_t event_type; 
+	uint8_t last_state; 
+	uint16_t val1; 
+	uint8_t val2;
+};
 
 
 
@@ -11550,10 +11546,31 @@ void init_alpine_pins(void);
 
 
 
-#line 41 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
-#line 50 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 34 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 54 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+#line 66 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
 
 
 
@@ -11563,7 +11580,7 @@ void init_alpine_pins(void);
 
 void StartupStateMachine();
 _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
-void AddEventToTlSmQueue( char event);
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
 
 
 
@@ -14588,7 +14605,22 @@ void ble_srv_ascii_to_utf8(ble_srv_utf8_str_t * p_utf8, char * p_ascii);
 
 
 
-#line 25 "..\\localLibs\\app_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -14701,7 +14733,7 @@ uint32_t ble_sm_state_update(ble_sm_t * p_ble_sm, uint8_t ble_state_info);
 
 
 
-unsigned char Event_queue [10] = { 4,0,0,0,0,0,0,0,0,0};
+struct Evt_struct Event_queue [10];
 unsigned char Event_q_index=0;
 
 unsigned char Current_packet [(30 * 3)];
@@ -14763,7 +14795,8 @@ app_timer_id_t										EventClearTimer;
 
 
 static void InitForNewTL(void);
-static void HandleStateMachineEvent( char event);
+static void HandleStateMachineEvent( struct Evt_struct event);
+static void AddEventToTlSmQueue_intern( uint8_t event_type);
 
 
  
@@ -14771,12 +14804,12 @@ static void HandleStateMachineEvent( char event);
 
 
  void RegularTimerDone(void * nil){
-	AddEventToTlSmQueue(1);
+	AddEventToTlSmQueue_intern(1);
 	
 }
 
 void PeripheralTimerDone(void * nil){
-	AddEventToTlSmQueue(5);
+	AddEventToTlSmQueue_intern(5);
 }
 
 
@@ -14786,13 +14819,13 @@ void PeripheralTimerDone(void * nil){
 static void SetTimer(unsigned long time){
 	uint32_t err_code;
 	if(time == 0){
-		AddEventToTlSmQueue(1);
+		AddEventToTlSmQueue_intern(1);
 		return;
 	}
 	
 	
 	err_code = app_timer_start(Regular_sm_timer, time * 4, 0); 
-	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 112, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
+	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 113, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
 }
 
 
@@ -14801,7 +14834,7 @@ static void SetTimer(unsigned long time){
  
 static void SetPeripheralTimer(unsigned long time){
 	if(time == 0){
-		AddEventToTlSmQueue(1);
+		AddEventToTlSmQueue_intern(1);
 		return;
 	}
 }
@@ -14906,9 +14939,9 @@ static void UpdateCycleSettings(){
 
 
  
-static void HandlePeripheralEvent( char event);
+static void HandlePeripheralEvent( struct Evt_struct event_struct );
 
-
+ 
 
 
 
@@ -14916,10 +14949,10 @@ static void HandlePeripheralEvent( char event);
 
 
  
-static void ProcessingPacketState(char event){
+static void ProcessingPacketState(struct Evt_struct event_struct){
 	
 	
-	if(event != 3 && event != 4) return;
+	if(event_struct.event_type != 3 && event_struct.event_type != 4) return;
 	
 	if(Current_packet[0] == 241) { 
 		ParsePacketPreamble(); 
@@ -14939,7 +14972,7 @@ static void ProcessingPacketState(char event){
 
 
 
-static void FrontDelayState(char event){
+static void FrontDelayState(struct Evt_struct event_struct){
 	Curr_state = 1;
 	Preload_flag = 0; 
 	
@@ -14973,12 +15006,12 @@ static void HandleShutterDone(){
 
 
  
-static void TakingPhotoState(char event){
+static void TakingPhotoState(struct Evt_struct event_struct){
 	
 	static char sub_state = 0;
-
 	
-	if(event != 1 && event != 2) return;
+	
+	if(event_struct.event_type != 1 && event_struct.event_type != 2) return;
 			
 	if( sub_state == 0){
 		{ nrf_gpio_pin_clear(22); };
@@ -15012,12 +15045,12 @@ static void TakingPhotoState(char event){
 
 
  
-static void MovingState(char event){
+static void MovingState(struct Evt_struct event_struct){
 	static char sub_state = 1; 
 	static char num_steps_taken = 0;
 	
 	
-	if(event != 1) return;
+	if(event_struct.event_type != 1) return;
   
 	if(sub_state == 1){
 		SetStepperPWM(Drive_duty);
@@ -15046,11 +15079,28 @@ static void MovingState(char event){
 
 
 
+
  
-void AddEventToTlSmQueue( char event){
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2){
 	static 	void * nil; 
-	if(Event_queue[Event_q_index] != 0) Event_q_index ++; 
-	Event_queue[Event_q_index] = event;
+	struct Evt_struct event_struct = {event_type,4 ,data1,data2 } ; 
+	
+	if(Event_queue[Event_q_index].event_type != 0) Event_q_index ++; 
+	Event_queue[Event_q_index] = event_struct;
+	ProcessEvents( nil);
+}
+
+
+
+
+ 
+static void AddEventToTlSmQueue_intern( uint8_t event_type){
+	static 	void * nil; 
+	struct Evt_struct event_struct = {event_type,Curr_state ,0,0 } ; 
+	
+	if(Event_queue[Event_q_index].event_type != 0) Event_q_index ++; 
+	
+	Event_queue[Event_q_index] = event_struct;
 	ProcessEvents( nil);
 }
 
@@ -15059,7 +15109,9 @@ void AddEventToTlSmQueue( char event){
 
 
  
-static void HandleStateMachineEvent( char event){
+static void HandleStateMachineEvent( struct Evt_struct event){
+	
+	uint8_t evt_type = event.event_type; 
 	
 	if(Curr_state == 2){
 		
@@ -15081,17 +15133,18 @@ static void HandleStateMachineEvent( char event){
 
  
 void ProcessEvents(void* nil){
-	char event; 
-	static char i;
+	static struct Evt_struct event; 
+	static uint8_t i;
+	static struct Evt_struct null_evt_struct = {0,0,0,0}; 
 	
 	event = Event_queue[0]; 
 	
 	for( i = 0; i < Event_q_index; i++){
 			Event_queue[i] = Event_queue[i+1];
 	}
-	Event_queue[Event_q_index] = 0; 
+	Event_queue[Event_q_index] = null_evt_struct; 
 	if(Event_q_index > 0) Event_q_index--;
-	if(event ==0) return; 
+	if(event.event_type ==0) return; 
 	HandleStateMachineEvent( event );
 }
 
@@ -15107,7 +15160,7 @@ static void GetEepromValues(){
 void StartupStateMachine(){
 	GetEepromValues();
 	Curr_state = 6;
-	AddEventToTlSmQueue( 4 ); 
+	AddEventToTlSmQueue_intern( 4 ); 
 }
 
 

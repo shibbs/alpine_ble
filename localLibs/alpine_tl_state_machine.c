@@ -126,9 +126,32 @@ static void SetPeripheralTimer(unsigned long time){
 
 /* -----------PACKET PROCESSING -----------------------*/
 
-//handles the bytes at the start of the packet, that apply to all TLs in packet
+
+/**
+handles the bytes at the start of the packet, that apply to all TLs in packet
+The relevant values to set are below:
+
+Incoming Byte #	|	relevant Value
+1	|	# of TLs to complete. + 10 if looping queue. +20 if not executing on power up
+2	|	Preload Motion #1 in .1 degrees
+3	|	Preload Motion #2 in .1degrees
+
+This function will set :  Num_timelapses , Preload_motion1 ,  Preload_motion2 ,  Execute_on_start ,  Looping 
+
+**/
 static void ParsePacketPreamble(){
-	
+	Num_timelapses = Current_packet [1];
+	if(Num_timelapses >20){ //if >20 then not executing on start
+		Execute_on_start = false;
+		Num_timelapses -= 20;
+	}else Execute_on_start = true;
+	if(Num_timelapses >10){ //if we're >10 then looping is on
+		Looping = true;
+		Num_timelapses -=10;
+	}else Looping = false;
+	//at the end of the above, Num_timelapses will be properly set
+	Preload_motion1 = Current_packet[2]; //both preload motions are in units of .1 degree already
+	Preload_motion2 = Current_packet[3];
 }
 
 // processes time-lapse settings for a specific TL
@@ -237,9 +260,9 @@ process the current timelapse settings, and set up the front delay timer and go 
 static void ProcessingPacketState(struct Evt_struct event_struct){
 	//run basic check on packet
 	//if not startup then save to EEprom
-	if(event_struct.event_type != NEW_PACKET_EVT && event_struct.event_type != POWER_TOGGLE_EVT) return;
+	if(event_struct.event_type != NEW_TL_PACKET_EVT && event_struct.event_type != POWER_TOGGLE_EVT) return;
 	
-	if(Current_packet[0] == TL_PACKET_START_FLAG) { // if we seem to have a valid packet : 
+	if(Tl_pkt_is_good ( Current_packet) ) { // if we seem to have a valid packet : 
 		ParsePacketPreamble(); //parse the values at the front of the packet
 		if(Starting_up && !Execute_on_start){ //if we should not execute on startup, go to sleep
 			Curr_state = TURNING_OFF_STATE;
@@ -409,6 +432,9 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 	
 	if(event.event_type == SHUTTER_CMD_EVT){
 		Curr_state = REMOTE_CNTRL_STATE;
+	}else if(event.event_type == NEW_TL_PACKET_EVT){
+		//FLAG SAH we should have some sort of function for cleaning up w/e was going on at the time of this. 
+		Curr_state = PROCESSING_PACKET_STATE;
 	}
 	
 	if(Curr_state == TURNING_OFF_STATE){
@@ -483,8 +509,8 @@ bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
 	
 	num_vals = tl_pkt_in[1]; //grab the number of Tls being sent
 	num_vals = num_vals * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN; //compute the expected length of the settings being sent, excluding the postamble
-	
-	//check the end flag
+
+	//check the end flag. subtract 2 to take into account   that we index from 0
 	if( tl_pkt_in[ num_vals + TL_PACKET_POSTAMBLE_LEN-1] != TL_PACKET_END_FLAG) return false;
 	//compute the checksum
 	for( index=0; index < num_vals ; index++){
@@ -496,6 +522,10 @@ bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
 	return true;
 }
 
+//takes in a new timelapse values packet and copies it's memory and values over to the Current_packet variable, which tracks our current TL
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length){
+	memcpy ( Current_packet , new_pkt, length) ;
+}		
 
 
 

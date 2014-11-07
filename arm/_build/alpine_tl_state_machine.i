@@ -11581,6 +11581,8 @@ typedef struct Evt_struct {
 void StartupStateMachine();
 _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
 void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length);
+
 
 
 
@@ -14736,7 +14738,7 @@ uint32_t ble_sm_state_update(ble_sm_t * p_ble_sm, uint8_t ble_state_info);
 struct Evt_struct Event_queue [10];
 unsigned char Event_q_index=0;
 
-unsigned char Current_packet [(30 * 3)];
+unsigned char Current_packet [(36 * 3)];
 
 
 unsigned char Curr_state = 6 ;
@@ -14954,7 +14956,7 @@ static void ProcessingPacketState(struct Evt_struct event_struct){
 	
 	if(event_struct.event_type != 3 && event_struct.event_type != 4) return;
 	
-	if(Current_packet[0] == 241) { 
+	if(Tl_pkt_is_good ( Current_packet) ) { 
 		ParsePacketPreamble(); 
 		if(Starting_up && !Execute_on_start){ 
 			Curr_state = 2;
@@ -15124,6 +15126,9 @@ static void HandleStateMachineEvent( struct Evt_struct event){
 	
 	if(event.event_type == 6){
 		Curr_state = 7;
+	}else if(event.event_type == 3){
+		
+		Curr_state = 6;
 	}
 	
 	if(Curr_state == 2){
@@ -15197,8 +15202,8 @@ _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
 	if( tl_pkt_in[0] != 241 ) return 0;
 	
 	num_vals = tl_pkt_in[1]; 
-	num_vals = num_vals * 30 + 4; 
-	
+	num_vals = num_vals * 36 + 4; 
+
 	
 	if( tl_pkt_in[ num_vals + 2-1] != 243) return 0;
 	
@@ -15211,6 +15216,9 @@ _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
 	return 1;
 }
 
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length){
+	memcpy ( Current_packet , new_pkt, length) ;
+}		
 
 
 

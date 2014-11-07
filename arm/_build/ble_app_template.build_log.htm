@@ -9,7 +9,7 @@ Project File Date:  10/31/2014
 <h2>Output:</h2>
 Build target 'nrf51822_xxaa_s110 (256K)'
 creating preprocessor file for main.c...
-..\localLibs/alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs/alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
 ..\main.c: 1 warning, 0 errors
 compiling main.c...
@@ -23,19 +23,19 @@ compiling main.c...
   void EnableStepper();
 ..\localLibs/alpine_tl_state_machine.h(18): warning:  #375-D: declaration requires a typedef name
   };
-..\localLibs/alpine_tl_state_machine.h(75): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
+..\localLibs/alpine_tl_state_machine.h(76): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
   void StartupStateMachine();//function called on startup, gets the SM rolling.
-..\localLibs/alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs/alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
 ..\main.c(264): warning:  #177-D: variable "shutter_cmd" was declared but never referenced
         uint8_t shutter_cmd = array_in[0];
-..\main.c(280): warning:  #550-D: variable "incoming_vals" was set but never used
-        static uint8_t incoming_vals [TL_PACKET_MAX_LEN];
-..\main.c(651): warning:  #177-D: function "power_manage" was declared but never referenced
+..\main.c(284): warning:  #177-D: variable "i" was declared but never referenced
+        int i;
+..\main.c(654): warning:  #177-D: function "power_manage" was declared but never referenced
   static void power_manage(void)
 ..\main.c: 10 warnings, 0 errors
 creating preprocessor file for app_state_machine.c...
-..\localLibs\alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs\alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
 ..\localLibs\app_state_machine.c: 1 warning, 0 errors
 compiling app_state_machine.c...
@@ -49,13 +49,13 @@ compiling app_state_machine.c...
   void EnableStepper();
 ..\localLibs\alpine_tl_state_machine.h(18): warning:  #375-D: declaration requires a typedef name
   };
-..\localLibs\alpine_tl_state_machine.h(75): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
+..\localLibs\alpine_tl_state_machine.h(76): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
   void StartupStateMachine();//function called on startup, gets the SM rolling.
-..\localLibs\alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs\alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
 ..\localLibs\app_state_machine.c: 7 warnings, 0 errors
 creating preprocessor file for alpine_tl_state_machine.c...
-..\localLibs\alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs\alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
 ..\localLibs\alpine_tl_state_machine.c: 1 warning, 0 errors
 compiling alpine_tl_state_machine.c...
@@ -69,11 +69,11 @@ compiling alpine_tl_state_machine.c...
   void EnableStepper();
 ..\localLibs\alpine_tl_state_machine.h(18): warning:  #375-D: declaration requires a typedef name
   };
-..\localLibs\alpine_tl_state_machine.h(75): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
+..\localLibs\alpine_tl_state_machine.h(76): warning:  #1295-D: Deprecated declaration StartupStateMachine - give arg types
   void StartupStateMachine();//function called on startup, gets the SM rolling.
-..\localLibs\alpine_tl_state_machine.h(91): warning:  #1-D: last line of file ends without a newline
+..\localLibs\alpine_tl_state_machine.h(94): warning:  #1-D: last line of file ends without a newline
   #endif //ALPINE_TL_SM_H_
-..\localLibs\alpine_tl_state_machine.c(399): warning:  #177-D: variable "evt_type" was declared but never referenced
+..\localLibs\alpine_tl_state_machine.c(408): warning:  #177-D: variable "evt_type" was declared but never referenced
         uint8_t evt_type = event.event_type; 
 ..\localLibs\alpine_tl_state_machine.c(120): warning:  #177-D: function "SetPeripheralTimer" was declared but never referenced
   static void SetPeripheralTimer(unsigned long time){
@@ -81,7 +81,7 @@ compiling alpine_tl_state_machine.c...
   static void HandlePeripheralEvent( struct Evt_struct event_struct );
 ..\localLibs\alpine_tl_state_machine.c: 10 warnings, 0 errors
 linking...
-Program Size: Code=17692 RO-data=236 RW-data=328 ZI-data=4160  
+Program Size: Code=17804 RO-data=236 RW-data=328 ZI-data=4200  
 FromELF: creating hex file...
 ".\_build\ble_app_template.axf" - 0 Error(s), 30 Warning(s).
 
@@ -133,7 +133,7 @@ ROMTableAddr = 0xE00FF003
 Target info:
 ------------
 Device: nRF51822_xxAA
-VTarget = 2.866V
+VTarget = 3.442V
 State of Pins: 
 TCK: 0, TDI: 1, TDO: 0, TMS: 1, TRES: 1, TRST: 1
 Hardware-Breakpoints: 4
@@ -142,20 +142,14 @@ Watchpoints:          2
 JTAG speed: 1000 kHz
  
 Include "C:\\Nordic Semiconductor\\nRF51 SDK_v6.0.0.43681_Backup_1\\Nordic\\nrf51822\\Board\\pca10000\\S110\\alpine_ble_repo\\arm\\JLinkSettings.ini" 
-[BREAKPOINTS]
+BREAKPOINTS]
 ^
-*** error 10: Syntax error
+*** error 34: undefined identifier
 Erase Done.
 Programming Done.
 Verify OK.
 Application running ...
-onductor nRF ARM devices Device Family Pack.
-   * Component: Startup Version: 1.0.0
-
-<h2>Collection of Component include folders:</h2>
-  C:\Nordic Semiconductor\nRF51 SDK_v6.0.0.43681_Backup_1\Nordic\nrf51822\Board\pca10000\S110\alpine_ble_repo\arm\RTE
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include
-  C:\Keil_v5\ARM\PACK\NordicSemiconductor\nRF_DeviceFamilyPack\1.1.1\Device\Include
+nRF_DeviceFamilyPack\1.1.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
 
@@ -166,4 +160,42 @@ onductor nRF ARM devices Device Family Pack.
       Source file:   Device\Source\arm\arm_startup_nrf51.s
       Source file:   Device\Source\system_nrf51.c
       Include file:  Device\Include\system_nrf51.h
-Target not created
+Load "C:\\Nordic Semiconductor\\nRF51 SDK_v6.0.0.43681_Backup_1\\Nordic\\nrf51822\\Board\\pca10000\\S110\\alpine_ble_repo\\arm\\_build\\ble_app_template.axf" 
+Set JLink Project File to "C:\Nordic Semiconductor\nRF51 SDK_v6.0.0.43681_Backup_1\Nordic\nrf51822\Board\pca10000\S110\alpine_ble_repo\arm\JLinkSettings.ini"
+* JLink Info: Device "NRF51822_XXAA" selected (257 KB flash, 16 KB RAM).
+ 
+JLink info:
+------------
+DLL: V4.86b, compiled Jun 27 2014 20:11:00
+Firmware: J-Link Lite-Cortex-M V8 compiled Aug 29 2012 15:24:23
+Hardware: V8.00
+S/N : 518004950 
+Feature(s) : GDB 
+ 
+* JLink Info: Found SWD-DP with ID 0x0BB11477
+* JLink Info: Found Cortex-M0 r0p0, Little endian.
+* JLink Info: FPUnit: 4 code (BP) slots and 0 literal slots
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: nRF51822_xxAA
+VTarget = 3.442V
+State of Pins: 
+TCK: 0, TDI: 1, TDO: 0, TMS: 1, TRES: 1, TRST: 1
+Hardware-Breakpoints: 4
+Software-Breakpoints: 8192
+Watchpoints:          2
+JTAG speed: 1000 kHz
+ 
+Include "C:\\Nordic Semiconductor\\nRF51 SDK_v6.0.0.43681_Backup_1\\Nordic\\nrf51822\\Board\\pca10000\\S110\\alpine_ble_repo\\arm\\JLinkSettings.ini" 
+BREAKPOINTS]
+^
+*** error 34: undefined identifier
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+Done.
+Verify OK.
+Application running ...

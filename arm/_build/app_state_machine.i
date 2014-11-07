@@ -14730,6 +14730,8 @@ typedef struct Evt_struct {
 void StartupStateMachine();
 _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
 void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length);
+
 
 
 

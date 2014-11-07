@@ -48,7 +48,7 @@ typedef struct Evt_struct {
 #define NULL_EVT							0
 #define TIMER1_EVT						1
 #define	PC_SYNC_CHANGE_EVT		2
-#define NEW_PACKET_EVT				3
+#define NEW_TL_PACKET_EVT				3
 #define	POWER_TOGGLE_EVT			4
 #define TIMER2_EVT						5
 #define SHUTTER_CMD_EVT				6
@@ -76,6 +76,8 @@ typedef struct Evt_struct {
 void StartupStateMachine();//function called on startup, gets the SM rolling.
 bool Tl_pkt_is_good(uint8_t * tl_pkt_in); //checks if a tl packet is good
 void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length);
+
 
 
 //these are out timer callback functions

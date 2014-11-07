@@ -42,18 +42,24 @@ bool Starting_up =true;
 For Michron, Shutter_on_time_ms, and move_to_shutter_time_ms are the only relevant variables
 For Radian, the group of variables below are all important
 */
-long Shutter_on_time_ms = 100; //ms shutter is on for
-long Shutter_to_move_time_ms = 1000; //ms between shutter closing and motion
-long Step_on_time_ms = 4;//ms that motor is in on value after stepping
-long Step_idle_time_ms = 0; //ms that motor is in idle value between steps
-long Move_to_shutter_time_ms = 1000; //ms between moving ending and shutter starting
-unsigned int Num_steps_per_move = 5; //number of motor steps to take per motionsfron
-long Set_cycle_time_ms = 2000; //cycle time in ms
 
-//motor variables
-char Direction = CW; //either 1 or -1, needs to be signed
+long Shutter_to_move_time_ms = 1000; //ms between shutter closing and motion
+long Step_on_time_100us = 40;//.1ms that motor is in on value after stepping
+long Step_idle_time_100us = 0; //ms that motor is in idle value between steps
+long Move_to_shutter_time_ms = 3000; //ms between moving ending and shutter starting
+unsigned int Num_steps_per_move = 5; //number of motor steps to take per motionsfron
+
+//basic TL vars set by incoming packets
+uint16_t Degrees_total;  //# degrees to move during TL
+char Step_direction = CW; //either 1 or -1, needs to be signed
+long Set_interval_ms = 4000; //cycle time in ms
+unsigned long Num_photos_to_take = 100;
 unsigned char Drive_duty = 100; //duty cycle when stepping
 unsigned char Idle_duty = 0; //duty cycle while idling
+long Front_delay_time_s = 0;
+long Shutter_on_time_ms = 100; //ms shutter is on for
+uint16_t	Step_time_100us = 40; //.1ms spent between steps when    stepping
+
 
 //non-standard tracking variables
 bool	Bramping_on = false;
@@ -64,11 +70,9 @@ bool	Hdr_on			= false;
 bool	Usb_cntrl_on	= false; //flag for if we're doing usb control of camera
 
 //time-lapse tracking variables
-unsigned long Num_photos_to_take = 100;
 unsigned long Num_photos_taken= 0 ;
 
-//time lapse variables
-long Front_delay_time_ms = 0;
+
 
 //more temporary variables
 unsigned char Preload_flag = 0;
@@ -154,10 +158,77 @@ static void ParsePacketPreamble(){
 	Preload_motion2 = Current_packet[3];
 }
 
-// processes time-lapse settings for a specific TL
+/** processes basic time-lapse settings for a specific TL
+
+TL packet Byte #
+0	Total Degrees LSB
+1	Total Degres MSB
+2	Step Direction	0 = CW, 1 = CC1, 
+3	Interval LSB	units of 1/4 second
+4	Interval MSB
+5	Interval MMSB
+6	# Photos LSB
+7	# Photos MSB
+8	Drive Duty Cycle
+9	Idle Duty Cycle
+10	front Time Delay LSB	units of seconds
+11	front delay MSB
+12	front delay MMSB
+13	Shutter time LSB	units of 1 ms
+14	Shutter TIme MSB
+15	Shutter MMSB
+16	Step Time	units of .1 ms, time spent with each step
+
+//basic TL vars set by incoming packets
+Variables to set :  
+Degrees_total , Step_direction ; Set_interval_ms Num_photos_to_take  
+Drive_duty Idle_duty,  Front_delay_time_s ,   Shutter_on_time_ms  , Step_time_100us 
+
+
+**/
 static void ProcessTLSettings(){
+	uint16_t packet_index = TL_PACKET_PREAMBLE_LEN; 
+	uint32_t temp1;
+	uint32_t temp2;
+	//get degreees of motion
+	temp1 = Current_packet[packet_index++]; //degres lsb
+	temp2 = Current_packet[packet_index++]; //degrees msb
+	Degrees_total = temp1 + (temp2 << 8); //compute degrees to move
+	//get step direction
+	Step_direction = Current_packet[packet_index ++];
+	//get interval in ms
+	temp1 = Current_packet[packet_index ++];//interval LSB in quarter seconds
+	temp2 = Current_packet[packet_index ++];//interval MSB
+	Set_interval_ms = Current_packet[packet_index ++];
+	Set_interval_ms = temp1 + (temp2<<8) + (Set_interval_ms<<16); //computer the set interval in seconds
+	Set_interval_ms *=250; //boost us up to ms from quarter seconds
+	//get # photos to take
+	temp1 = Current_packet[packet_index ++]; //# photos LSB
+	temp2 = Current_packet[packet_index ++]; //# photos MSB
+	Num_photos_to_take = temp1 + (temp2<<8);//compute # photos to take
+	
+	Drive_duty = Current_packet[packet_index ++]; //get drive duty
+	Idle_duty = Current_packet[packet_index ++]; //idle duty
+	//get front delay in seconds
+	temp1 = Current_packet[packet_index ++];	//front delay LSB in seconds
+	temp2 = Current_packet[packet_index ++];  //front delay MSB
+	Front_delay_time_s = Current_packet[packet_index ++]; //front delay MMSB
+	Front_delay_time_s = temp1 + (temp2 << 8) + (Front_delay_time_s<<16); //compute final front delay time
+	//get shutter on time in ms
+	temp1 = Current_packet[packet_index ++]; //shutter time LSB units of 1 ms
+	temp2 = Current_packet[packet_index ++]; //shutter time MSB
+	Shutter_on_time_ms = Current_packet[packet_index ++]; //shutter time MMSB
+	Shutter_on_time_ms = temp1 + (temp2<<8) + (Shutter_on_time_ms<<16); //get final shutter on time in ms
+	
+	Step_time_100us = Current_packet[packet_index ++]; //get the step time in units of .1ms
+	
+	
+	Step_idle_time_100us = Step_time_100us - Step_on_time_100us;
+	
 	//process settings for this timelapse
 	InitForNewTL(); //reset timelapse variables for startup
+	
+	
 }
 
 //initialize variables relevant to a new timelapse being run
@@ -185,19 +256,19 @@ static void HandlePreloadSettings(){
 	static unsigned int num_steps;
 	if(Preload_flag ==1){
 		//grab carbons of our set TL values
-		step_on_carbon = Step_on_time_ms;
-		step_idle_carbon = Step_idle_time_ms;
+		step_on_carbon = Step_on_time_100us;
+		step_idle_carbon = Step_idle_time_100us;
 		num_steps = Num_steps_per_move;
 		//set us up to do the first preload motion
-		Step_on_time_ms = MIN_STEP_ON_MS;
-		Step_idle_time_ms = 0;
+		Step_on_time_100us = MIN_STEP_ON_MS;
+		Step_idle_time_100us = 0;
 	}else if(Preload_flag ==2){ //else we are starting second run
 		
 	}else{ //for value of 3 we are done and should reset vals
 		Preload_flag = 0;
 		//reset the carboned values
-		Step_on_time_ms = step_on_carbon;
-		Step_idle_time_ms = step_idle_carbon;
+		Step_on_time_100us = step_on_carbon;
+		Step_idle_time_100us = step_idle_carbon;
 		Num_steps_per_move = num_steps;
 	}
 	
@@ -208,7 +279,7 @@ static void UpdateCycleSettings(){
 	static unsigned long cycle_time_ms = 1000;
 	static unsigned long step_time_ms = 0;
 	static long temp = 0;//general temp value need to make sure this doesn't limit our dynamic range
-	cycle_time_ms = Set_cycle_time_ms; //we want this to account for error later on FLAG SAH
+	cycle_time_ms = Set_interval_ms; //we want this to account for error later on FLAG SAH
 	if(Preload_flag !=0){
 		HandlePreloadSettings();
 		return;
@@ -228,17 +299,22 @@ static void UpdateCycleSettings(){
 	//Re-evaluate cycle based on settings and error
 	
 	//constraints to this are: cycle_time_ms, Shutter_on_time_ms, Step_idle_time_ms, Num_steps_per_move, SHUTTER_LED_MS, 
-	step_time_ms = Num_steps_per_move *( Step_idle_time_ms + Step_on_time_ms); //compute time spent moving
-	temp = (Shutter_on_time_ms + step_time_ms + SHUTTER_LED_MS );
-	if(temp > cycle_time_ms ) Move_to_shutter_time_ms = MIN_MOVE_TO_SHUTTER_TIME_MS; //if we don't have enough time, need to use the min value
-	else Move_to_shutter_time_ms = cycle_time_ms - temp;
+	step_time_ms = Num_steps_per_move *(( Step_idle_time_100us + Step_on_time_100us)/10); //compute time spent moving
+	temp = (Shutter_on_time_ms + step_time_ms + SHUTTER_LED_MS ); //compute time taken up that is not the delays between shooting and motion
 	
+	if( ( temp + MIN_MOVE_TO_SHUTTER_TIME_MS+ MIN_SHUTTER_TO_MOVE_TIME_MS ) > cycle_time_ms ){//if we don't have enough time, need to use the min values
+		Move_to_shutter_time_ms = MIN_MOVE_TO_SHUTTER_TIME_MS; 
+		Shutter_to_move_time_ms = MIN_SHUTTER_TO_MOVE_TIME_MS;
+		return;
+	}
+	
+	temp = cycle_time_ms - temp; //get the remaining amount of time
+	Move_to_shutter_time_ms = temp / 2;
 	if(Move_to_shutter_time_ms > MAX_MOVE_TO_SHUTTER_TIME_MS) Move_to_shutter_time_ms = MAX_MOVE_TO_SHUTTER_TIME_MS; //if time is too long, cap it
+	
 	//now compute time between shutter and motion. This is lowest importance variable
 	//we need to ensure this doesn't go negative. 
-	temp += Move_to_shutter_time_ms; 
-	if(temp > cycle_time_ms) Shutter_to_move_time_ms = MIN_SHUTTER_TO_MOVE_TIME_MS;
-	else Shutter_to_move_time_ms = cycle_time_ms - temp ;
+	 Shutter_to_move_time_ms = temp - Move_to_shutter_time_ms ;
 }
 
 
@@ -274,7 +350,7 @@ static void ProcessingPacketState(struct Evt_struct event_struct){
 	Starting_up = false;
 	Curr_state = FRONT_DELAY_STATE;
 	//set up front delay timer
-	SetTimer( Front_delay_time_ms );
+	SetTimer( Front_delay_time_s*1000 );
 	
 }
 
@@ -362,11 +438,11 @@ static void MovingState(struct Evt_struct event_struct){
   
 	if(sub_state == START_STEP_SUB){
 		SetStepperPWM(Drive_duty);//set motor pwm for stepping
-		Step(Direction);//step motor
+		Step(Step_direction);//step motor
 		sub_state = STEP_HOLD_SUB;
-		SetTimer(Step_on_time_ms);
+		SetTimer(Step_on_time_100us/10);
 	}else if (sub_state == STEP_HOLD_SUB){ //set the motor to idle
-		SetStepperPWM(Idle_duty);//set motor to idle pwm
+		if(Step_idle_time_100us > 0) SetStepperPWM(Idle_duty);//set motor to idle pwm only if there's an actual point to it
 		sub_state = START_STEP_SUB; //send us back to start step
 		num_steps_taken ++;//increment num steps taken
 		
@@ -377,7 +453,7 @@ static void MovingState(struct Evt_struct event_struct){
 			SetTimer(Move_to_shutter_time_ms);
 			UpdateCycleSettings();
 		}else {
-			SetTimer( Step_idle_time_ms );
+			SetTimer( Step_idle_time_100us/10 );
 		}
 	}//end sub_state if/else
 	

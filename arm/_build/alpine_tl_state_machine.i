@@ -14759,18 +14759,24 @@ _Bool Starting_up =1;
 
 
  
-long Shutter_on_time_ms = 100; 
+
 long Shutter_to_move_time_ms = 1000; 
-long Step_on_time_ms = 4;
-long Step_idle_time_ms = 0; 
-long Move_to_shutter_time_ms = 1000; 
+long Step_on_time_100us = 40;
+long Step_idle_time_100us = 0; 
+long Move_to_shutter_time_ms = 3000; 
 unsigned int Num_steps_per_move = 5; 
-long Set_cycle_time_ms = 2000; 
 
 
-char Direction = 1; 
+uint16_t Degrees_total;  
+char Step_direction = 1; 
+long Set_interval_ms = 4000; 
+unsigned long Num_photos_to_take = 100;
 unsigned char Drive_duty = 100; 
 unsigned char Idle_duty = 0; 
+long Front_delay_time_s = 0;
+long Shutter_on_time_ms = 100; 
+uint16_t	Step_time_100us = 40; 
+
 
 
 _Bool	Bramping_on = 0;
@@ -14781,11 +14787,9 @@ _Bool	Hdr_on			= 0;
 _Bool	Usb_cntrl_on	= 0; 
 
 
-unsigned long Num_photos_to_take = 100;
 unsigned long Num_photos_taken= 0 ;
 
 
-long Front_delay_time_ms = 0;
 
 
 unsigned char Preload_flag = 0;
@@ -14826,8 +14830,8 @@ static void SetTimer(unsigned long time){
 	}
 	
 	
-	err_code = app_timer_start(Regular_sm_timer, time * 4, 0); 
-	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 113, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
+	err_code = app_timer_start(Regular_sm_timer, time * 16, 0); 
+	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 117, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
 }
 
 
@@ -14844,14 +14848,104 @@ static void SetPeripheralTimer(unsigned long time){
  
 
 
+
+
+
+
+
+
+
+
+
+
+
+ 
 static void ParsePacketPreamble(){
+	Num_timelapses = Current_packet [1];
+	if(Num_timelapses >20){ 
+		Execute_on_start = 0;
+		Num_timelapses -= 20;
+	}else Execute_on_start = 1;
+	if(Num_timelapses >10){ 
+		Looping = 1;
+		Num_timelapses -=10;
+	}else Looping = 0;
 	
+	Preload_motion1 = Current_packet[2]; 
+	Preload_motion2 = Current_packet[3];
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 static void ProcessTLSettings(){
+	uint16_t packet_index = 4; 
+	uint32_t temp1;
+	uint32_t temp2;
+	
+	temp1 = Current_packet[packet_index++]; 
+	temp2 = Current_packet[packet_index++]; 
+	Degrees_total = temp1 + (temp2 << 8); 
+	
+	Step_direction = Current_packet[packet_index ++];
+	
+	temp1 = Current_packet[packet_index ++];
+	temp2 = Current_packet[packet_index ++];
+	Set_interval_ms = Current_packet[packet_index ++];
+	Set_interval_ms = temp1 + (temp2<<8) + (Set_interval_ms<<16); 
+	Set_interval_ms *=250; 
+	
+	temp1 = Current_packet[packet_index ++]; 
+	temp2 = Current_packet[packet_index ++]; 
+	Num_photos_to_take = temp1 + (temp2<<8);
+	
+	Drive_duty = Current_packet[packet_index ++]; 
+	Idle_duty = Current_packet[packet_index ++]; 
+	
+	temp1 = Current_packet[packet_index ++];	
+	temp2 = Current_packet[packet_index ++];  
+	Front_delay_time_s = Current_packet[packet_index ++]; 
+	Front_delay_time_s = temp1 + (temp2 << 8) + (Front_delay_time_s<<16); 
+	
+	temp1 = Current_packet[packet_index ++]; 
+	temp2 = Current_packet[packet_index ++]; 
+	Shutter_on_time_ms = Current_packet[packet_index ++]; 
+	Shutter_on_time_ms = temp1 + (temp2<<8) + (Shutter_on_time_ms<<16); 
+	
+	Step_time_100us = Current_packet[packet_index ++]; 
+	
+	
+	Step_idle_time_100us = Step_time_100us - Step_on_time_100us;
+	
 	
 	InitForNewTL(); 
+	
+	
 }
 
 
@@ -14879,19 +14973,19 @@ static void HandlePreloadSettings(){
 	static unsigned int num_steps;
 	if(Preload_flag ==1){
 		
-		step_on_carbon = Step_on_time_ms;
-		step_idle_carbon = Step_idle_time_ms;
+		step_on_carbon = Step_on_time_100us;
+		step_idle_carbon = Step_idle_time_100us;
 		num_steps = Num_steps_per_move;
 		
-		Step_on_time_ms = 4;
-		Step_idle_time_ms = 0;
+		Step_on_time_100us = 4;
+		Step_idle_time_100us = 0;
 	}else if(Preload_flag ==2){ 
 		
 	}else{ 
 		Preload_flag = 0;
 		
-		Step_on_time_ms = step_on_carbon;
-		Step_idle_time_ms = step_idle_carbon;
+		Step_on_time_100us = step_on_carbon;
+		Step_idle_time_100us = step_idle_carbon;
 		Num_steps_per_move = num_steps;
 	}
 	
@@ -14902,7 +14996,7 @@ static void UpdateCycleSettings(){
 	static unsigned long cycle_time_ms = 1000;
 	static unsigned long step_time_ms = 0;
 	static long temp = 0;
-	cycle_time_ms = Set_cycle_time_ms; 
+	cycle_time_ms = Set_interval_ms; 
 	if(Preload_flag !=0){
 		HandlePreloadSettings();
 		return;
@@ -14922,17 +15016,22 @@ static void UpdateCycleSettings(){
 	
 	
 	
-	step_time_ms = Num_steps_per_move *( Step_idle_time_ms + Step_on_time_ms); 
-	temp = (Shutter_on_time_ms + step_time_ms + 50 );
-	if(temp > cycle_time_ms ) Move_to_shutter_time_ms = 100; 
-	else Move_to_shutter_time_ms = cycle_time_ms - temp;
+	step_time_ms = Num_steps_per_move *(( Step_idle_time_100us + Step_on_time_100us)/10); 
+	temp = (Shutter_on_time_ms + step_time_ms + 50 ); 
 	
+	if( ( temp + 100+ 10 ) > cycle_time_ms ){
+		Move_to_shutter_time_ms = 100; 
+		Shutter_to_move_time_ms = 10;
+		return;
+	}
+	
+	temp = cycle_time_ms - temp; 
+	Move_to_shutter_time_ms = temp / 2;
 	if(Move_to_shutter_time_ms > 2000) Move_to_shutter_time_ms = 2000; 
 	
 	
-	temp += Move_to_shutter_time_ms; 
-	if(temp > cycle_time_ms) Shutter_to_move_time_ms = 10;
-	else Shutter_to_move_time_ms = cycle_time_ms - temp ;
+	
+	 Shutter_to_move_time_ms = temp - Move_to_shutter_time_ms ;
 }
 
 
@@ -14968,7 +15067,7 @@ static void ProcessingPacketState(struct Evt_struct event_struct){
 	Starting_up = 0;
 	Curr_state = 3;
 	
-	SetTimer( Front_delay_time_ms );
+	SetTimer( Front_delay_time_s*1000 );
 	
 }
 
@@ -15056,9 +15155,9 @@ static void MovingState(struct Evt_struct event_struct){
   
 	if(sub_state == 1){
 		SetStepperPWM(Drive_duty);
-		Step(Direction);
+		Step(Step_direction);
 		sub_state = 2;
-		SetTimer(Step_on_time_ms);
+		SetTimer(Step_on_time_100us/10);
 	}else if (sub_state == 2){ 
 		SetStepperPWM(Idle_duty);
 		sub_state = 1; 
@@ -15071,7 +15170,7 @@ static void MovingState(struct Evt_struct event_struct){
 			SetTimer(Move_to_shutter_time_ms);
 			UpdateCycleSettings();
 		}else {
-			SetTimer( Step_idle_time_ms );
+			SetTimer( Step_idle_time_100us/10 );
 		}
 	}
 	
@@ -15215,6 +15314,7 @@ _Bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
 	
 	return 1;
 }
+
 
 void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length){
 	memcpy ( Current_packet , new_pkt, length) ;

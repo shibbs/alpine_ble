@@ -20,8 +20,8 @@ typedef struct Evt_struct {
 
 
 
-#define APP_TIMER_PRESCALER             8    /**< Value of the RTC1 PRESCALER register. Runs from 32.768KHz internal RC We want to run in units of .1ms, so use 32K /   = 10^4 Hz = 10^-4s */
-#define TICKS_PER_MS										4		 /**< # ticks/ms based on the prescaler above. with 8 prescale it's ~4 ticks/ms. We need to also compensate for error inthe timer */
+#define APP_TIMER_PRESCALER             2    /**< Value of the RTC1 PRESCALER register. Runs from 32.768KHz internal RC We want to run in units of .1ms, so use 32K /   = 10^4 Hz = 10^-4s */
+#define TICKS_PER_MS										16		 /**< # ticks/ms based on the prescaler above. with 8 prescale it's ~4 ticks/ms. We need to also compensate for error inthe timer */
 
 
 //definition of states

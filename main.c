@@ -277,7 +277,7 @@ FLAG SAH we need to add a system into this for alerting the host to successes or
 static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 {
 	static uint8_t num_packets = 3;
-	static uint8_t last_packet_num = 0;
+	static int8_t last_packet_num = 0;
 	static uint8_t incoming_vals [TL_PACKET_MAX_LEN];
 	uint8_t packet_num = tl_pkt[0];
 	uint16_t temp	= 0;
@@ -289,8 +289,10 @@ static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 		num_packets = num_packets * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN + TL_PACKET_POSTAMBLE_LEN; //compute the expected length of the settings being sent
 		//FLAG SAH we need to thrown in a math.roundup in here
 		num_packets = num_packets / TL_SUB_PACKET_LEN; //figure out how many packets this will equal
+		last_packet_num=-1;//need to reset this value
 	}
-	if(packet_num ==0 || packet_num == (last_packet_num+1)) //check if our new packet number is correctly an increment of the last. This avoids missing a packet
+	//if packet num is 0 this still works
+	if( packet_num == (last_packet_num+1)) //check if our new packet number is correctly an increment of the last. This avoids missing a packet
 	{
 		temp = packet_num * TL_SUB_PACKET_LEN;
 		for(uint8_t i = 1; i <= TL_SUB_PACKET_LEN; i++){
@@ -305,7 +307,7 @@ static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 			}
 			else  AddEventToTlSmQueue_extern(NEW_TL_PACKET_EVT,BAD_PKT,0); //aler the TL stat machine that a bad packet was recieved
 		}
-		last_packet_num ++; //increment our packet number
+		last_packet_num =packet_num; //increment our packet number
 	}
 }
 

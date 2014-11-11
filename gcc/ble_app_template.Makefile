@@ -1,5 +1,5 @@
 TARGET_CHIP := NRF51822_QFAA_CA
-BOARD := BOARD_NRF6310
+BOARD := BOARD_PCA10001
 
 # application source
 C_SOURCE_FILES += main.c
@@ -18,8 +18,14 @@ C_SOURCE_FILES += app_timer.c
 C_SOURCE_FILES += app_scheduler.c
 C_SOURCE_FILES += app_button.c
 C_SOURCE_FILES += app_gpiote.c
+C_SOURCE_FILES += alpine_boards.c
+C_SOURCE_FILES += alpine_tl_state_machine.c
+C_SOURCE_FILES += app_state_machine.c
+C_SOURCE_FILES += radian_stepper.c
+
 
 SDK_PATH = ../../../../../
+LOCAL_LIBS_PATH = ../
 
 OUTPUT_FILENAME := ble_app_template
 
@@ -40,6 +46,8 @@ CFLAGS += -ffunction-sections
 # let linker to dump unused sections
 LDFLAGS := -Wl,--gc-sections
 
+INCLUDEPATHS += -I"$(LOCAL_LIBS_PATH)localLibs"
+
 INCLUDEPATHS += -I"$(SDK_PATH)Include/s110"
 INCLUDEPATHS += -I"$(SDK_PATH)Include/ble"
 INCLUDEPATHS += -I"$(SDK_PATH)Include/ble/ble_services"
@@ -47,6 +55,7 @@ INCLUDEPATHS += -I"$(SDK_PATH)Include/app_common"
 INCLUDEPATHS += -I"$(SDK_PATH)Include/sd_common"
 INCLUDEPATHS += -I"$(SDK_PATH)Include/sdk"
 
+C_SOURCE_PATHS += $(LOCAL_LIBS_PATH)localLibs
 C_SOURCE_PATHS += $(SDK_PATH)Source/ble
 C_SOURCE_PATHS += $(SDK_PATH)Source/app_common
 C_SOURCE_PATHS += $(SDK_PATH)Source/sd_common

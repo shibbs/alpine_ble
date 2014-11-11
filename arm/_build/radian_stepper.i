@@ -9810,6 +9810,7 @@ void SetStepperPWM(int PWM);
 
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -9822,7 +9823,7 @@ void SetStepperPWM(int PWM);
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 
@@ -9856,7 +9857,51 @@ void init_alpine_pins(void);
 
 #line 15 "..\\localLibs\\radian_stepper.c"
 #line 16 "..\\localLibs\\radian_stepper.c"
+#line 1 "..\\./Simple_PWM/nrf_pwm.h"
 
+
+
+
+
+#line 7 "..\\./Simple_PWM/nrf_pwm.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef enum
+{
+    PWM_MODE_LED_100,   
+    PWM_MODE_LED_255,   
+    PWM_MODE_LED_1000,  
+    
+    PWM_MODE_MTR_100,   
+    PWM_MODE_MTR_255    
+} nrf_pwm_mode_t;
+
+typedef struct
+{
+    uint8_t         num_channels;
+    uint8_t         gpio_num[3];
+    uint8_t         ppi_channel[6];
+    uint8_t         gpiote_channel[3];
+    uint8_t         mode;
+} nrf_pwm_config_t; 
+
+uint32_t nrf_pwm_init(nrf_pwm_config_t *config);
+
+void nrf_pwm_set_value(uint32_t pwm_channel, uint32_t pwm_value);
+
+#line 17 "..\\localLibs\\radian_stepper.c"
 
 
 
@@ -9869,19 +9914,30 @@ void InitStepperPins(){
 	nrf_gpio_cfg_output(9);
 	nrf_gpio_cfg_output(10);
 	nrf_gpio_cfg_output(5);
-	nrf_gpio_pin_clear(11);
+	nrf_gpio_pin_clear(11); 
+	nrf_gpio_pin_clear(10);
+	
+
+	nrf_pwm_config_t init_config = {. num_channels = 1, . gpio_num = {10}, . ppi_channel = {0,1,2,3,4,5},. gpiote_channel = {2,3,0}, . mode = PWM_MODE_LED_100};; 
+	init_config.num_channels = 1; 
+	init_config.gpio_num[0] = 10;
+	init_config.ppi_channel[0] = 0;
+	init_config.ppi_channel[1] = 1;
+	init_config.gpiote_channel[0] = 2;
+	init_config.mode = PWM_MODE_LED_100;
+	nrf_pwm_init(&init_config); 
 }
 
 
 
  
 void Brake( ){
-    nrf_gpio_pin_set(11);
-    SetStepperPWM(0);
-    nrf_gpio_pin_set(6);
-    nrf_gpio_pin_clear(7);
-    nrf_gpio_pin_set(8);
-    nrf_gpio_pin_clear(9);
+		nrf_gpio_pin_set(11);
+		SetStepperPWM(0);
+		nrf_gpio_pin_set(6);
+		nrf_gpio_pin_clear(7);
+		nrf_gpio_pin_set(8);
+		nrf_gpio_pin_clear(9);
 }
 
 
@@ -9889,87 +9945,60 @@ void Brake( ){
  
 void Step(int StepDirection){
 
-    static unsigned int stepNum = 0; 
-    stepNum+= StepDirection;
-    stepNum = stepNum%4;
-    
-    
-    
-    if(stepNum==0){
-        nrf_gpio_pin_set(6);
-        nrf_gpio_pin_clear(7);
-        nrf_gpio_pin_set(8);
-        nrf_gpio_pin_clear(9);
-    }
-    else if(stepNum==1){
-        nrf_gpio_pin_set(6);
-        nrf_gpio_pin_clear(7);
-        nrf_gpio_pin_clear(8);
-        nrf_gpio_pin_set(9);
-    }
-    else if(stepNum==2){
-        nrf_gpio_pin_clear(6);
-        nrf_gpio_pin_set(7);
-        nrf_gpio_pin_clear(8);
-        nrf_gpio_pin_set(9);
-        
-        
-    }
-    else{
-        nrf_gpio_pin_clear(6);
-        nrf_gpio_pin_set(7);
-        nrf_gpio_pin_set(8);
-        nrf_gpio_pin_clear(9);
-    }
-    
+	static unsigned int stepNum = 0; 
+	stepNum+= StepDirection;
+	stepNum = stepNum%4;
+	
+	
+	
+	if(stepNum==0){
+			nrf_gpio_pin_set(6);
+			nrf_gpio_pin_clear(7);
+			nrf_gpio_pin_set(8);
+			nrf_gpio_pin_clear(9);
+	}
+	else if(stepNum==1){
+			nrf_gpio_pin_set(6);
+			nrf_gpio_pin_clear(7);
+			nrf_gpio_pin_clear(8);
+			nrf_gpio_pin_set(9);
+	}
+	else if(stepNum==2){
+			nrf_gpio_pin_clear(6);
+			nrf_gpio_pin_set(7);
+			nrf_gpio_pin_clear(8);
+			nrf_gpio_pin_set(9);
+	}
+	else{
+			nrf_gpio_pin_clear(6);
+			nrf_gpio_pin_set(7);
+			nrf_gpio_pin_set(8);
+			nrf_gpio_pin_clear(9);
+	}
+		
 }
 
 
 
  
-void SetStepperPWM(int PWM){
-  
-  
+void SetStepperPWM(int duty){
+	
+	
+	nrf_gpio_pin_set(10);
+
 }
 
 
 
 void EnableStepper(){
-    
-
-
-
-
-
-
- 
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-   
-    nrf_gpio_pin_set(11);
-    nrf_gpio_pin_set(5);
+	
+	nrf_gpio_pin_set(19); 
+	nrf_gpio_pin_set(11); 
+	nrf_gpio_pin_set(5); 
 }
-               
+							 
 
 void DisableStepper(){
-    nrf_gpio_pin_clear(11);
-    nrf_gpio_pin_clear(5);
-}           
+	nrf_gpio_pin_clear(11); 
+	
+}					 

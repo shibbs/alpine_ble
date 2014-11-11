@@ -72,9 +72,9 @@ uint32_t nrf_pwm_init(nrf_pwm_config_t *config)
         pwm_gpiote_channel[i] = config->gpiote_channel[i];        
     }
     PWM_TIMER->TASKS_CLEAR = 1;
-	PWM_TIMER->BITMODE = TIMER_BITMODE_BITMODE_16Bit;
+		PWM_TIMER->BITMODE = TIMER_BITMODE_BITMODE_16Bit;
     PWM_TIMER->CC[3] = pwm_max_value*2;
-	PWM_TIMER->MODE = TIMER_MODE_MODE_Timer;
+		PWM_TIMER->MODE = TIMER_MODE_MODE_Timer;
     PWM_TIMER->SHORTS = TIMER_SHORTS_COMPARE3_CLEAR_Msk;
     PWM_TIMER->EVENTS_COMPARE[0] = PWM_TIMER->EVENTS_COMPARE[1] = PWM_TIMER->EVENTS_COMPARE[2] = PWM_TIMER->EVENTS_COMPARE[3] = 0;     
 

@@ -14633,6 +14633,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 #line 6 "..\\localLibs\\alpine_boards.h"
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -14645,7 +14646,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 

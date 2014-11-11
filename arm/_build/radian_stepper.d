@@ -14,3 +14,4 @@
 .\_build\radian_stepper.o: ..\..\..\..\..\Include\nordic_common.h
 .\_build\radian_stepper.o: ..\localLibs\radian_stepper.h
 .\_build\radian_stepper.o: ..\localLibs\alpine_includes.h
+.\_build\radian_stepper.o: ..\./Simple_PWM/nrf_pwm.h

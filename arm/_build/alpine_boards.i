@@ -9799,6 +9799,7 @@ void SetStepperPWM(int PWM);
 
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -9811,7 +9812,7 @@ void SetStepperPWM(int PWM);
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 
@@ -9903,12 +9904,14 @@ void init_alpine_pins(){
 		nrf_gpio_cfg_output(28);
 		nrf_gpio_cfg_output(29);
 		nrf_gpio_cfg_output(2);
-		nrf_gpio_cfg_output(0);
-		nrf_gpio_cfg_output(0);
+		nrf_gpio_cfg_output(21);
 		nrf_gpio_cfg_output(22);
-		nrf_gpio_cfg_output(22);
+		nrf_gpio_cfg_output(4);
+		nrf_gpio_cfg_output(3);
 		nrf_gpio_cfg_output(0);
 		nrf_gpio_cfg_output(1);
 		nrf_gpio_cfg_output(2);
+		
+		{ nrf_gpio_pin_set(4); }; { nrf_gpio_pin_set(3); } ; { nrf_gpio_pin_set(22); } ; { nrf_gpio_pin_set(21); } ; 
 		InitStepperPins();
 }

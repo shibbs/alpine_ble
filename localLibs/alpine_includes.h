@@ -7,7 +7,7 @@
 #include "nordic_common.h"
 #include "radian_stepper.h"
 
-#define MICHRON						true
+#define MICHRON						false
 
 #define SHUTTER_PACKET_LEN 2
 

@@ -16,11 +16,7 @@
 #define PWM_IRQHandler          TIMER2_IRQHandler
 #define PWM_IRQn                TIMER2_IRQn
 
-#define PWM_DEFAULT_CONFIG  {.num_channels   = 1,                \
-                             .gpio_num       = {STEPPER_PWM},         \
-                             .ppi_channel    = {0,1,2,3,4,5},    \ //what is this? 
-                             .gpiote_channel = {2,3,0},          \
-                             .mode           = PWM_MODE_LED_100};
+#define PWM_DEFAULT_CONFIG  {.num_channels   = 1,  .gpio_num = {STEPPER_PWM}, .ppi_channel = {0,1,2,3,4,5},.gpiote_channel = {2,3,0},   .mode = PWM_MODE_LED_100};
 
 typedef enum
 {

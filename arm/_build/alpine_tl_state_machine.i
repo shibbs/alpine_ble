@@ -11484,6 +11484,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 #line 6 "..\\localLibs\\alpine_boards.h"
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -11496,7 +11497,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 
@@ -14764,15 +14765,15 @@ long Shutter_to_move_time_ms = 1000;
 long Step_on_time_100us = 40;
 long Step_idle_time_100us = 0; 
 long Move_to_shutter_time_ms = 3000; 
-unsigned int Num_steps_per_move = 5; 
+unsigned int Num_steps_per_move = 50; 
 
 
 uint16_t Degrees_total;  
 char Step_direction = 1; 
 long Set_interval_ms = 4000; 
 unsigned long Num_photos_to_take = 100;
-unsigned char Drive_duty = 100; 
-unsigned char Idle_duty = 0; 
+unsigned char Drive_duty = 90; 
+unsigned char Idle_duty = 90; 
 long Front_delay_time_s = 0;
 long Shutter_on_time_ms = 100; 
 uint16_t	Step_time_100us = 40; 
@@ -15092,7 +15093,8 @@ static void HandleShutterDone(){
 	
 	
 	
-	if(!1){
+
+	if(!0){
 		Curr_state = 4;
 		SetTimer(Shutter_to_move_time_ms);
 	}
@@ -15115,7 +15117,7 @@ static void TakingPhotoState(struct Evt_struct event_struct){
 	if(event_struct.event_type != 1 && event_struct.event_type != 2) return;
 			
 	if( sub_state == 0){
-		{ nrf_gpio_pin_clear(22); };
+		{ nrf_gpio_pin_clear(3); };
 		sub_state = 1;
 		SetTimer(50);
 	}else if(sub_state == 1){
@@ -15125,13 +15127,13 @@ static void TakingPhotoState(struct Evt_struct event_struct){
 			SetTimer(100); 
 			sub_state = 2;
 		}else{
-			{ nrf_gpio_pin_set(22); };
+			{ nrf_gpio_pin_set(3); };
 			SetTimer(Shutter_on_time_ms); 
 			sub_state = 3;
 		}
 	 
 	}else if(sub_state == 2){ 
-		{ nrf_gpio_pin_set(22); };
+		{ nrf_gpio_pin_set(3); };
 		SetTimer(Shutter_on_time_ms); 
 	}else{
 		{ nrf_gpio_pin_set(2); nrf_gpio_pin_set(0); }
@@ -15154,12 +15156,13 @@ static void MovingState(struct Evt_struct event_struct){
 	if(event_struct.event_type != 1) return;
   
 	if(sub_state == 1){
+		if(num_steps_taken == 0) EnableStepper(); 
 		SetStepperPWM(Drive_duty);
 		Step(Step_direction);
 		sub_state = 2;
 		SetTimer(Step_on_time_100us/10);
 	}else if (sub_state == 2){ 
-		SetStepperPWM(Idle_duty);
+		if(Step_idle_time_100us > 0) SetStepperPWM(Idle_duty);
 		sub_state = 1; 
 		num_steps_taken ++;
 		
@@ -15168,6 +15171,7 @@ static void MovingState(struct Evt_struct event_struct){
 			num_steps_taken = 0;
 			Curr_state = 1;
 			SetTimer(Move_to_shutter_time_ms);
+
 			UpdateCycleSettings();
 		}else {
 			SetTimer( Step_idle_time_100us/10 );
@@ -15179,8 +15183,8 @@ static void MovingState(struct Evt_struct event_struct){
 
 void ProcessingRemoteControlState(struct Evt_struct event){
 	
-	if(event.val1 == 1){ { nrf_gpio_pin_clear(22); }; }
-	else { nrf_gpio_pin_set(22); };
+	if(event.val1 == 1){ { nrf_gpio_pin_clear(3); }; }
+	else { nrf_gpio_pin_set(3); };
 
 }
 

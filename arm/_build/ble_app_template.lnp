@@ -18,6 +18,7 @@
 ".\_build\alpine_tl_state_machine.o"
 ".\_build\alpine_boards.o"
 ".\_build\radian_stepper.o"
+".\_build\nrf_pwm.o"
 --library_type=microlib --strict --scatter ".\_build\ble_app_template.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

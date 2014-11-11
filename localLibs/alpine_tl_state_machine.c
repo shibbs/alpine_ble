@@ -47,15 +47,15 @@ long Shutter_to_move_time_ms = 1000; //ms between shutter closing and motion
 long Step_on_time_100us = 40;//.1ms that motor is in on value after stepping
 long Step_idle_time_100us = 0; //ms that motor is in idle value between steps
 long Move_to_shutter_time_ms = 3000; //ms between moving ending and shutter starting
-unsigned int Num_steps_per_move = 5; //number of motor steps to take per motionsfron
+unsigned int Num_steps_per_move = 50; //number of motor steps to take per motionsfron
 
 //basic TL vars set by incoming packets
 uint16_t Degrees_total;  //# degrees to move during TL
 char Step_direction = CW; //either 1 or -1, needs to be signed
 long Set_interval_ms = 4000; //cycle time in ms
 unsigned long Num_photos_to_take = 100;
-unsigned char Drive_duty = 100; //duty cycle when stepping
-unsigned char Idle_duty = 0; //duty cycle while idling
+unsigned char Drive_duty = 90; //duty cycle when stepping
+unsigned char Idle_duty = 90; //duty cycle while idling
 long Front_delay_time_s = 0;
 long Shutter_on_time_ms = 100; //ms shutter is on for
 uint16_t	Step_time_100us = 40; //.1ms spent between steps when    stepping
@@ -375,6 +375,7 @@ static void HandleShutterDone(){
 	//if we are supposed to take mulptiple photos, handle the math here and update Shutter_open_time_ms as appropriate
 	
 	//if we are in Radian mode and are done taking photos, move us to moving state
+
 	if(!MICHRON){
 		Curr_state = MOVING_STATE;
 		SetTimer(Shutter_to_move_time_ms);
@@ -437,6 +438,7 @@ static void MovingState(struct Evt_struct event_struct){
 	if(event_struct.event_type != TIMER1_EVT) return;
   
 	if(sub_state == START_STEP_SUB){
+		if(num_steps_taken == 0) EnableStepper(); //if it's our first step, fire us up! 
 		SetStepperPWM(Drive_duty);//set motor pwm for stepping
 		Step(Step_direction);//step motor
 		sub_state = STEP_HOLD_SUB;
@@ -451,6 +453,7 @@ static void MovingState(struct Evt_struct event_struct){
 			num_steps_taken = 0;
 			Curr_state = TAKING_PHOTO_STATE;
 			SetTimer(Move_to_shutter_time_ms);
+//			DisableStepper(); 
 			UpdateCycleSettings();
 		}else {
 			SetTimer( Step_idle_time_100us/10 );

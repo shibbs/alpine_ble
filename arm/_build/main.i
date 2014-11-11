@@ -18469,6 +18469,7 @@ void SetStepperPWM(int PWM);
 
 #line 7 "..\\localLibs/alpine_boards.h"
 
+#line 21 "..\\localLibs/alpine_boards.h"
 
 
 
@@ -18481,7 +18482,7 @@ void SetStepperPWM(int PWM);
 
 
 
-#line 34 "..\\localLibs/alpine_boards.h"
+
 
 #line 42 "..\\localLibs/alpine_boards.h"
 
@@ -18793,7 +18794,7 @@ static void advertising_init(void)
 static void shutter_write_handler(ble_sm_t * p_ble_sm, uint8_t* array_in)
 {
 	uint8_t shutter_cmd = array_in[0];
-		{ nrf_gpio_pin_clear(22); }; 
+		{ nrf_gpio_pin_clear(3); }; 
 	
 	AddEventToTlSmQueue_extern(6, array_in[0], array_in[1] );
 }

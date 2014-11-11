@@ -67,5 +67,7 @@ void init_alpine_pins(){
 		nrf_gpio_cfg_output(FOC_CNTRL);
 		nrf_gpio_cfg_output(TRIG_PWR_CNTRL);
 		nrf_gpio_cfg_output(TRIG_CNTRL);
+		
+		R_STAT_LED_OFF; G_STAT_LED_OFF ; R_BATT_LED_OFF ; G_BATT_LED_OFF ; 
 		InitStepperPins();
 }

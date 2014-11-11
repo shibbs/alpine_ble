@@ -7,15 +7,18 @@
 #include "nordic_common.h"
 #include "radian_stepper.h"
 
-#define MICHRON						true
+#define MICHRON						false
 
 #define SHUTTER_PACKET_LEN 2
 
 #define MAX_BLE_PACKET_LEN	20
 
-#define TL_PACKET_STD_LEN	30
+#define TL_PACKET_PREAMBLE_LEN	4  //start flag, #TLs, preload motion 1 & 2
+#define TL_PACKET_POSTAMBLE_LEN	2 //CHecksum + end flag
+#define TL_PACKET_STD_LEN	36
 #define TL_PACKET_MAX_QUEUES 3
 #define TL_PACKET_MAX_LEN (TL_PACKET_STD_LEN * TL_PACKET_MAX_QUEUES)
+#define TL_SUB_PACKET_LEN		(MAX_BLE_PACKET_LEN - 1)
 
 #define TL_PACKET_MAX_VAL			240
 #define TL_PACKET_START_FLAG	241

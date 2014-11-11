@@ -647,6 +647,16 @@
               <FileType>1</FileType>
               <FilePath>..\localLibs\radian_stepper.c</FilePath>
             </File>
+            <File>
+              <FileName>nrf_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Simple_PWM\nrf_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>nrf_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Simple_PWM\nrf_pwm.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1294,6 +1304,16 @@
               <FileName>radian_stepper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\localLibs\radian_stepper.c</FilePath>
+            </File>
+            <File>
+              <FileName>nrf_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Simple_PWM\nrf_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>nrf_pwm.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Simple_PWM\nrf_pwm.h</FilePath>
             </File>
           </Files>
         </Group>

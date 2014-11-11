@@ -12,11 +12,21 @@ This was designed using the nAN-36_v1.1 application note from nordic
 #include "ble.h"
 #include "ble_srv_common.h"
 
-//UUID for michron is B602xxxx-7238-CA82-79C1-10010C1126B3
+
 //#define BLE_SM_UUID_BASE {0xB6, 0x02, 0x72, 0x38, 0xCA, 0x82, 0x79, 0xC1, 0x10, 0x01,0x0C, 0x11, 0x26, 0xB3, 0x00, 0x00}
 //as far As I can tell, the UUID base needs be inserted as an array in backwards order to what you want. The 0 values are what get
 //witten over with the specific service UUIDs
+
+#ifdef MICHRON
+//UUID for michron is B602xxxx-7238-CA82-79C1-10010C1126B3
 #define BLE_SM_UUID_BASE {0xB3, 0x26, 0x11, 0x0C, 0x01, 0x10, 0xC1, 0x79, 0x82, 0xCA, 0x38, 0x72,0x00, 0x00, 0x02, 0xB6 }
+
+#else
+//Radian UUID : C871xxxx-891F-8535-FC3C-D1BE7A6D3E65 
+#define BLE_SM_UUID_BASE {0x65, 0x3E, 0x6D, 0x7A, 0xBE, 0xD1, 0x3C, 0xFC, 0x35, 0x85, 0x1F, 0x89,0x00, 0x00, 0x71, 0xC8 }
+
+#endif
+
 #define BLE_SM_UUID_SERVICE 0x1523
 #define BLE_SM_UUID_STATE_CHAR 0x1524
 #define BLE_SM_UUID_TIME_CHAR 0x1525
@@ -69,19 +79,19 @@ typedef struct
 */
 typedef struct ble_sm_s
 {
-    ble_sm_shutter_write_handler_t  shutter_write_handler;    /**< Event handler to be called for handling shutter write events in the ble SM Service. */
-    ble_sm_tl_pkt_write_handler_t   tl_pkt_write_handler;     /**< Event handler to be called for handling timelapse packet write events in the ble SM Service. */
-    uint16_t                      service_handle;                 /**< Handle of ble SM Service (as provided by the BLE stack). */
-    ble_gatts_char_handles_t      ble_sm_state_char_handles;      	  	/**< Handles related to the ble SM state characteristic. */
-    ble_gatts_char_handles_t      ble_sm_time_char_handles;      	  	/**< Handles related to the ble SM time characteristic. */
-    ble_gatts_char_handles_t      ble_sm_tl_pkt_char_handles; /**< Handles related to the ble SM time characteristic. */
-    ble_gatts_char_handles_t      ble_sm_shutter_char_handles;      	  /**< Handles related to the ble SM shutter characteristic. */
-		uint16_t                      report_ref_handle;              /**< Handle of the Report Reference descriptor. */
-    uint8_t                       ble_sm_state_last;             /**< Last ble State passed to the ble state machine. */
-		uint32_t											ble_sm_time_last;								/**< Last state machine time passed to the ble state machine. */
-  	uint16_t                      conn_handle;                    /**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */
-//    bool                          is_notification_supported;      /**< TRUE if notification of ble State Machine is supported. */	
-		uint8_t												uuid_type;
+	ble_sm_shutter_write_handler_t	shutter_write_handler;		/**< Event handler to be called for handling shutter write events in the ble SM Service. */
+	ble_sm_tl_pkt_write_handler_t	 tl_pkt_write_handler;		 /**< Event handler to be called for handling timelapse packet write events in the ble SM Service. */
+	uint16_t											service_handle;								 /**< Handle of ble SM Service (as provided by the BLE stack). */
+	ble_gatts_char_handles_t			ble_sm_state_char_handles;						/**< Handles related to the ble SM state characteristic. */
+	ble_gatts_char_handles_t			ble_sm_time_char_handles;						/**< Handles related to the ble SM time characteristic. */
+	ble_gatts_char_handles_t			ble_sm_tl_pkt_char_handles;			/**< Handles related to the ble SM tl packet characteristic. */
+	ble_gatts_char_handles_t			ble_sm_shutter_char_handles;					/**< Handles related to the ble SM shutter characteristic. */
+	uint16_t											report_ref_handle;							/**< Handle of the Report Reference descriptor. */
+	uint8_t											 ble_sm_state_last;						 /**< Last ble State passed to the ble state machine. */
+	uint32_t											ble_sm_time_last;								/**< Last state machine time passed to the ble state machine. */
+	uint16_t											conn_handle;										/**< Handle of the current connection (as provided by the BLE stack, is BLE_CONN_HANDLE_INVALID if not in a connection). */
+//		bool													is_notification_supported;			/**< TRUE if notification of ble State Machine is supported. */	
+	uint8_t												uuid_type;
 } ble_sm_t;
 
 /**@brief Function for initializing the State Machine Service.

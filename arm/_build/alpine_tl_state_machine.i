@@ -2428,9 +2428,7 @@ void SetStepperPWM(int PWM);
 
 
 
-
-
-
+#line 22 "..\\localLibs\\alpine_includes.h"
 
 
 
@@ -11486,6 +11484,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 #line 6 "..\\localLibs\\alpine_boards.h"
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -11498,7 +11497,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 
@@ -11535,16 +11534,12 @@ void init_alpine_pins(void);
 
 
 
-
-
-
-
-#line 23 "..\\localLibs\\alpine_tl_state_machine.h"
-
-
-
-
-
+typedef struct Evt_struct {
+	uint8_t event_type; 
+	uint8_t last_state; 
+	uint16_t val1; 
+	uint8_t val2;
+};
 
 
 
@@ -11552,10 +11547,32 @@ void init_alpine_pins(void);
 
 
 
-#line 41 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
-#line 50 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 35 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 55 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+#line 67 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
 
 
 
@@ -11563,12 +11580,17 @@ void init_alpine_pins(void);
 
 
 void StartupStateMachine();
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length);
+
 
 
 
 void RegularTimerDone(void * nil);
 void PeripheralTimerDone(void * nil);
 void ProcessEvents(void* nil);
+
 
 
 extern app_timer_id_t            				Regular_sm_timer;
@@ -14586,7 +14608,22 @@ void ble_srv_ascii_to_utf8(ble_srv_utf8_str_t * p_utf8, char * p_ascii);
 
 
 
-#line 25 "..\\localLibs\\app_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -14634,19 +14671,19 @@ typedef struct
  
 typedef struct ble_sm_s
 {
-    ble_sm_shutter_write_handler_t  shutter_write_handler;     
-    ble_sm_tl_pkt_write_handler_t   tl_pkt_write_handler;      
-    uint16_t                      service_handle;                  
-    ble_gatts_char_handles_t      ble_sm_state_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_time_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_tl_pkt_char_handles;  
-    ble_gatts_char_handles_t      ble_sm_shutter_char_handles;      	   
-		uint16_t                      report_ref_handle;               
-    uint8_t                       ble_sm_state_last;              
-		uint32_t											ble_sm_time_last;								 
-  	uint16_t                      conn_handle;                     
+	ble_sm_shutter_write_handler_t	shutter_write_handler;		 
+	ble_sm_tl_pkt_write_handler_t	 tl_pkt_write_handler;		  
+	uint16_t											service_handle;								  
+	ble_gatts_char_handles_t			ble_sm_state_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_time_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_tl_pkt_char_handles;			 
+	ble_gatts_char_handles_t			ble_sm_shutter_char_handles;					 
+	uint16_t											report_ref_handle;							 
+	uint8_t											 ble_sm_state_last;						  
+	uint32_t											ble_sm_time_last;								 
+	uint16_t											conn_handle;										 
 
-		uint8_t												uuid_type;
+	uint8_t												uuid_type;
 } ble_sm_t;
 
 
@@ -14699,10 +14736,10 @@ uint32_t ble_sm_state_update(ble_sm_t * p_ble_sm, uint8_t ble_state_info);
 
 
 
-unsigned char Event_queue [10] = { 4,0,0,0,0,0,0,0,0,0};
+struct Evt_struct Event_queue [10];
 unsigned char Event_q_index=0;
 
-unsigned char Current_packet [(30 * 3)];
+unsigned char Current_packet [(36 * 3)];
 
 
 unsigned char Curr_state = 6 ;
@@ -14723,18 +14760,24 @@ _Bool Starting_up =1;
 
 
  
-long Shutter_on_time_ms = 100; 
+
 long Shutter_to_move_time_ms = 1000; 
-long Step_on_time_ms = 4;
-long Step_idle_time_ms = 0; 
-long Move_to_shutter_time_ms = 1000; 
-unsigned int Num_steps_per_move = 5; 
-long Set_cycle_time_ms = 2000; 
+long Step_on_time_100us = 40;
+long Step_idle_time_100us = 0; 
+long Move_to_shutter_time_ms = 3000; 
+unsigned int Num_steps_per_move = 50; 
 
 
-char Direction = 1; 
-unsigned char Drive_duty = 100; 
-unsigned char Idle_duty = 0; 
+uint16_t Degrees_total;  
+char Step_direction = 1; 
+long Set_interval_ms = 4000; 
+unsigned long Num_photos_to_take = 100;
+unsigned char Drive_duty = 90; 
+unsigned char Idle_duty = 90; 
+long Front_delay_time_s = 0;
+long Shutter_on_time_ms = 100; 
+uint16_t	Step_time_100us = 40; 
+
 
 
 _Bool	Bramping_on = 0;
@@ -14745,11 +14788,9 @@ _Bool	Hdr_on			= 0;
 _Bool	Usb_cntrl_on	= 0; 
 
 
-unsigned long Num_photos_to_take = 100;
 unsigned long Num_photos_taken= 0 ;
 
 
-long Front_delay_time_ms = 0;
 
 
 unsigned char Preload_flag = 0;
@@ -14761,8 +14802,8 @@ app_timer_id_t										EventClearTimer;
 
 
 static void InitForNewTL(void);
-static void AddEventToQueue( char event);
-static void HandleStateMachineEvent( char event);
+static void HandleStateMachineEvent( struct Evt_struct event);
+static void AddEventToTlSmQueue_intern( uint8_t event_type);
 
 
  
@@ -14770,12 +14811,12 @@ static void HandleStateMachineEvent( char event);
 
 
  void RegularTimerDone(void * nil){
-	AddEventToQueue(1);
+	AddEventToTlSmQueue_intern(1);
 	
 }
 
 void PeripheralTimerDone(void * nil){
-	AddEventToQueue(5);
+	AddEventToTlSmQueue_intern(5);
 }
 
 
@@ -14785,13 +14826,13 @@ void PeripheralTimerDone(void * nil){
 static void SetTimer(unsigned long time){
 	uint32_t err_code;
 	if(time == 0){
-		AddEventToQueue(1);
+		AddEventToTlSmQueue_intern(1);
 		return;
 	}
 	
 	
-	err_code = app_timer_start(Regular_sm_timer, time * 4, 0); 
-	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 113, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
+	err_code = app_timer_start(Regular_sm_timer, time * 16, 0); 
+	do { const uint32_t LOCAL_ERR_CODE = (err_code); if (LOCAL_ERR_CODE != ((0x0) + 0)) { do { app_error_handler((LOCAL_ERR_CODE), 117, (uint8_t*) "..\\localLibs\\alpine_tl_state_machine.c"); } while (0); } } while (0);
 }
 
 
@@ -14800,7 +14841,7 @@ static void SetTimer(unsigned long time){
  
 static void SetPeripheralTimer(unsigned long time){
 	if(time == 0){
-		AddEventToQueue(1);
+		AddEventToTlSmQueue_intern(1);
 		return;
 	}
 }
@@ -14808,14 +14849,104 @@ static void SetPeripheralTimer(unsigned long time){
  
 
 
+
+
+
+
+
+
+
+
+
+
+
+ 
 static void ParsePacketPreamble(){
+	Num_timelapses = Current_packet [1];
+	if(Num_timelapses >20){ 
+		Execute_on_start = 0;
+		Num_timelapses -= 20;
+	}else Execute_on_start = 1;
+	if(Num_timelapses >10){ 
+		Looping = 1;
+		Num_timelapses -=10;
+	}else Looping = 0;
 	
+	Preload_motion1 = Current_packet[2]; 
+	Preload_motion2 = Current_packet[3];
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 static void ProcessTLSettings(){
+	uint16_t packet_index = 4; 
+	uint32_t temp1;
+	uint32_t temp2;
+	
+	temp1 = Current_packet[packet_index++]; 
+	temp2 = Current_packet[packet_index++]; 
+	Degrees_total = temp1 + (temp2 << 8); 
+	
+	Step_direction = Current_packet[packet_index ++];
+	
+	temp1 = Current_packet[packet_index ++];
+	temp2 = Current_packet[packet_index ++];
+	Set_interval_ms = Current_packet[packet_index ++];
+	Set_interval_ms = temp1 + (temp2<<8) + (Set_interval_ms<<16); 
+	Set_interval_ms *=250; 
+	
+	temp1 = Current_packet[packet_index ++]; 
+	temp2 = Current_packet[packet_index ++]; 
+	Num_photos_to_take = temp1 + (temp2<<8);
+	
+	Drive_duty = Current_packet[packet_index ++]; 
+	Idle_duty = Current_packet[packet_index ++]; 
+	
+	temp1 = Current_packet[packet_index ++];	
+	temp2 = Current_packet[packet_index ++];  
+	Front_delay_time_s = Current_packet[packet_index ++]; 
+	Front_delay_time_s = temp1 + (temp2 << 8) + (Front_delay_time_s<<16); 
+	
+	temp1 = Current_packet[packet_index ++]; 
+	temp2 = Current_packet[packet_index ++]; 
+	Shutter_on_time_ms = Current_packet[packet_index ++]; 
+	Shutter_on_time_ms = temp1 + (temp2<<8) + (Shutter_on_time_ms<<16); 
+	
+	Step_time_100us = Current_packet[packet_index ++]; 
+	
+	
+	Step_idle_time_100us = Step_time_100us - Step_on_time_100us;
+	
 	
 	InitForNewTL(); 
+	
+	
 }
 
 
@@ -14843,19 +14974,19 @@ static void HandlePreloadSettings(){
 	static unsigned int num_steps;
 	if(Preload_flag ==1){
 		
-		step_on_carbon = Step_on_time_ms;
-		step_idle_carbon = Step_idle_time_ms;
+		step_on_carbon = Step_on_time_100us;
+		step_idle_carbon = Step_idle_time_100us;
 		num_steps = Num_steps_per_move;
 		
-		Step_on_time_ms = 4;
-		Step_idle_time_ms = 0;
+		Step_on_time_100us = 4;
+		Step_idle_time_100us = 0;
 	}else if(Preload_flag ==2){ 
 		
 	}else{ 
 		Preload_flag = 0;
 		
-		Step_on_time_ms = step_on_carbon;
-		Step_idle_time_ms = step_idle_carbon;
+		Step_on_time_100us = step_on_carbon;
+		Step_idle_time_100us = step_idle_carbon;
 		Num_steps_per_move = num_steps;
 	}
 	
@@ -14866,7 +14997,7 @@ static void UpdateCycleSettings(){
 	static unsigned long cycle_time_ms = 1000;
 	static unsigned long step_time_ms = 0;
 	static long temp = 0;
-	cycle_time_ms = Set_cycle_time_ms; 
+	cycle_time_ms = Set_interval_ms; 
 	if(Preload_flag !=0){
 		HandlePreloadSettings();
 		return;
@@ -14886,17 +15017,22 @@ static void UpdateCycleSettings(){
 	
 	
 	
-	step_time_ms = Num_steps_per_move *( Step_idle_time_ms + Step_on_time_ms); 
-	temp = (Shutter_on_time_ms + step_time_ms + 50 );
-	if(temp > cycle_time_ms ) Move_to_shutter_time_ms = 100; 
-	else Move_to_shutter_time_ms = cycle_time_ms - temp;
+	step_time_ms = Num_steps_per_move *(( Step_idle_time_100us + Step_on_time_100us)/10); 
+	temp = (Shutter_on_time_ms + step_time_ms + 50 ); 
 	
+	if( ( temp + 100+ 10 ) > cycle_time_ms ){
+		Move_to_shutter_time_ms = 100; 
+		Shutter_to_move_time_ms = 10;
+		return;
+	}
+	
+	temp = cycle_time_ms - temp; 
+	Move_to_shutter_time_ms = temp / 2;
 	if(Move_to_shutter_time_ms > 2000) Move_to_shutter_time_ms = 2000; 
 	
 	
-	temp += Move_to_shutter_time_ms; 
-	if(temp > cycle_time_ms) Shutter_to_move_time_ms = 10;
-	else Shutter_to_move_time_ms = cycle_time_ms - temp ;
+	
+	 Shutter_to_move_time_ms = temp - Move_to_shutter_time_ms ;
 }
 
 
@@ -14905,9 +15041,9 @@ static void UpdateCycleSettings(){
 
 
  
-static void HandlePeripheralEvent( char event);
+static void HandlePeripheralEvent( struct Evt_struct event_struct );
 
-
+ 
 
 
 
@@ -14915,12 +15051,12 @@ static void HandlePeripheralEvent( char event);
 
 
  
-static void ProcessingPacketState(char event){
+static void ProcessingPacketState(struct Evt_struct event_struct){
 	
 	
-	if(event != 3 && event != 4) return;
+	if(event_struct.event_type != 3 && event_struct.event_type != 4) return;
 	
-	if(Current_packet[0] == 241) { 
+	if(Tl_pkt_is_good ( Current_packet) ) { 
 		ParsePacketPreamble(); 
 		if(Starting_up && !Execute_on_start){ 
 			Curr_state = 2;
@@ -14932,13 +15068,13 @@ static void ProcessingPacketState(char event){
 	Starting_up = 0;
 	Curr_state = 3;
 	
-	SetTimer( Front_delay_time_ms );
+	SetTimer( Front_delay_time_s*1000 );
 	
 }
 
 
 
-static void FrontDelayState(char event){
+static void FrontDelayState(struct Evt_struct event_struct){
 	Curr_state = 1;
 	Preload_flag = 0; 
 	
@@ -14957,7 +15093,8 @@ static void HandleShutterDone(){
 	
 	
 	
-	if(!1){
+
+	if(!0){
 		Curr_state = 4;
 		SetTimer(Shutter_to_move_time_ms);
 	}
@@ -14972,15 +15109,15 @@ static void HandleShutterDone(){
 
 
  
-static void TakingPhotoState(char event){
+static void TakingPhotoState(struct Evt_struct event_struct){
 	
 	static char sub_state = 0;
-
 	
-	if(event != 1 && event != 2) return;
+	
+	if(event_struct.event_type != 1 && event_struct.event_type != 2) return;
 			
 	if( sub_state == 0){
-		{ nrf_gpio_pin_clear(22); };
+		{ nrf_gpio_pin_clear(3); };
 		sub_state = 1;
 		SetTimer(50);
 	}else if(sub_state == 1){
@@ -14990,13 +15127,13 @@ static void TakingPhotoState(char event){
 			SetTimer(100); 
 			sub_state = 2;
 		}else{
-			{ nrf_gpio_pin_set(22); };
+			{ nrf_gpio_pin_set(3); };
 			SetTimer(Shutter_on_time_ms); 
 			sub_state = 3;
 		}
 	 
 	}else if(sub_state == 2){ 
-		{ nrf_gpio_pin_set(22); };
+		{ nrf_gpio_pin_set(3); };
 		SetTimer(Shutter_on_time_ms); 
 	}else{
 		{ nrf_gpio_pin_set(2); nrf_gpio_pin_set(0); }
@@ -15011,20 +15148,21 @@ static void TakingPhotoState(char event){
 
 
  
-static void MovingState(char event){
+static void MovingState(struct Evt_struct event_struct){
 	static char sub_state = 1; 
 	static char num_steps_taken = 0;
 	
 	
-	if(event != 1) return;
+	if(event_struct.event_type != 1) return;
   
 	if(sub_state == 1){
+		if(num_steps_taken == 0) EnableStepper(); 
 		SetStepperPWM(Drive_duty);
-		Step(Direction);
+		Step(Step_direction);
 		sub_state = 2;
-		SetTimer(Step_on_time_ms);
+		SetTimer(Step_on_time_100us/10);
 	}else if (sub_state == 2){ 
-		SetStepperPWM(Idle_duty);
+		if(Step_idle_time_100us > 0) SetStepperPWM(Idle_duty);
 		sub_state = 1; 
 		num_steps_taken ++;
 		
@@ -15033,21 +15171,50 @@ static void MovingState(char event){
 			num_steps_taken = 0;
 			Curr_state = 1;
 			SetTimer(Move_to_shutter_time_ms);
+
 			UpdateCycleSettings();
 		}else {
-			SetTimer( Step_idle_time_ms );
+			SetTimer( Step_idle_time_100us/10 );
 		}
 	}
 	
 }
 
+
+void ProcessingRemoteControlState(struct Evt_struct event){
+	
+	if(event.val1 == 1){ { nrf_gpio_pin_clear(3); }; }
+	else { nrf_gpio_pin_set(3); };
+
+}
+
+
  
 
 
-static void AddEventToQueue( char event){
+
+
+ 
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2){
 	static 	void * nil; 
-	if(Event_queue[Event_q_index] != 0) Event_q_index ++; 
-	Event_queue[Event_q_index] = event;
+	struct Evt_struct event_struct = {event_type,4 ,data1,data2 } ; 
+	
+	if(Event_queue[Event_q_index].event_type != 0) Event_q_index ++; 
+	Event_queue[Event_q_index] = event_struct;
+	ProcessEvents( nil);
+}
+
+
+
+
+ 
+static void AddEventToTlSmQueue_intern( uint8_t event_type){
+	static 	void * nil; 
+	struct Evt_struct event_struct = {event_type,Curr_state ,0,0 } ; 
+	
+	if(Event_queue[Event_q_index].event_type != 0) Event_q_index ++; 
+	
+	Event_queue[Event_q_index] = event_struct;
 	ProcessEvents( nil);
 }
 
@@ -15056,7 +15223,16 @@ static void AddEventToQueue( char event){
 
 
  
-static void HandleStateMachineEvent( char event){
+static void HandleStateMachineEvent( struct Evt_struct event){
+	
+	uint8_t evt_type = event.event_type; 
+	
+	if(event.event_type == 6){
+		Curr_state = 7;
+	}else if(event.event_type == 3){
+		
+		Curr_state = 6;
+	}
 	
 	if(Curr_state == 2){
 		
@@ -15070,6 +15246,8 @@ static void HandleStateMachineEvent( char event){
 		
 	}else if(Curr_state == 6){
 		ProcessingPacketState(event);
+	}else if( Curr_state == 7){
+		ProcessingRemoteControlState(event);
 	}
 	
 }
@@ -15078,17 +15256,18 @@ static void HandleStateMachineEvent( char event){
 
  
 void ProcessEvents(void* nil){
-	char event; 
-	static char i;
+	static struct Evt_struct event; 
+	static uint8_t i;
+	static struct Evt_struct null_evt_struct = {0,0,0,0}; 
 	
 	event = Event_queue[0]; 
 	
 	for( i = 0; i < Event_q_index; i++){
 			Event_queue[i] = Event_queue[i+1];
 	}
-	Event_queue[Event_q_index] = 0; 
+	Event_queue[Event_q_index] = null_evt_struct; 
 	if(Event_q_index > 0) Event_q_index--;
-	if(event ==0) return; 
+	if(event.event_type ==0) return; 
 	HandleStateMachineEvent( event );
 }
 
@@ -15104,11 +15283,46 @@ static void GetEepromValues(){
 void StartupStateMachine(){
 	GetEepromValues();
 	Curr_state = 6;
-	AddEventToQueue( 4 ); 
+	AddEventToTlSmQueue_intern( 4 ); 
 }
 
 
+ 
 
+
+
+
+
+
+
+ 
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in){
+	uint16_t num_vals; 
+	uint8_t checksum = 0;
+	uint16_t index = 0;
+	
+	
+	if( tl_pkt_in[0] != 241 ) return 0;
+	
+	num_vals = tl_pkt_in[1]; 
+	num_vals = num_vals * 36 + 4; 
+
+	
+	if( tl_pkt_in[ num_vals + 2-1] != 243) return 0;
+	
+	for( index=0; index < num_vals ; index++){
+		checksum += tl_pkt_in[index];
+	}
+	if(checksum != tl_pkt_in[num_vals]) return 0; 
+	
+	
+	return 1;
+}
+
+
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length){
+	memcpy ( Current_packet , new_pkt, length) ;
+}		
 
 
 

@@ -262,28 +262,53 @@ static void advertising_init(void)
 static void shutter_write_handler(ble_sm_t * p_ble_sm, uint8_t* array_in)
 {
 	uint8_t shutter_cmd = array_in[0];
-	if (shutter_cmd ==1)
-	{
-
-	}
-	else
-	{
-
-	}
+		G_STAT_LED_ON; //turn the LED on
+	//throw an event that the shutter write handler was called, and pass through the first 2 bytes of the inbound data
+	AddEventToTlSmQueue_extern(SHUTTER_CMD_EVT, array_in[0], array_in[1] );
 }
-//this handles the shutter write event
+
+/**@brief Function for handling writes to the Timelapse packet characteristic
+ *
+ * @details saves the tl data into a temporary array. When a valid completed packet has been sent
+						it calls the New_tl_settings_rcvd() function
+FLAG SAH we need to add a system into this for alerting the host to successes or failures in the communications process
+
+*/
 static void tl_pkt_write_handler(ble_sm_t * p_ble_sm, uint8_t* tl_pkt)
 {
-	uint8_t shutter_cmd = tl_pkt[0];
-	if (shutter_cmd ==1)
+	static uint8_t num_packets = 3;
+	static int8_t last_packet_num = 0;
+	static uint8_t incoming_vals [TL_PACKET_MAX_LEN];
+	uint8_t packet_num = tl_pkt[0];
+	uint16_t temp	= 0;
+	int i;
+	
+	if (packet_num ==0) //if this is the first packet, then we need to get some information from it
 	{
-
+		num_packets = tl_pkt[2]; //grab the number of Tls being sent
+		num_packets = num_packets * TL_PACKET_STD_LEN + TL_PACKET_PREAMBLE_LEN + TL_PACKET_POSTAMBLE_LEN; //compute the expected length of the settings being sent
+		//FLAG SAH we need to thrown in a math.roundup in here
+		num_packets = num_packets / TL_SUB_PACKET_LEN; //figure out how many packets this will equal
+		last_packet_num=-1;//need to reset this value
 	}
-	else
+	//if packet num is 0 this still works
+	if( packet_num == (last_packet_num+1)) //check if our new packet number is correctly an increment of the last. This avoids missing a packet
 	{
-
+		temp = packet_num * TL_SUB_PACKET_LEN;
+		for(uint8_t i = 1; i <= TL_SUB_PACKET_LEN; i++){
+			incoming_vals[temp] = tl_pkt[i];
+			temp++; //important that we keep this value where it is since we use it later on
+		}
+		//check if we are on the last packet. If so then we need to check the checksum and that the last value flag is in the right place
+		if(packet_num == num_packets){
+			if( Tl_pkt_is_good( incoming_vals ) ){
+				UpdateCurrentTlPacket(incoming_vals , temp); //update the currently-used time lapse values array
+				AddEventToTlSmQueue_extern(NEW_TL_PACKET_EVT,GOOD_PKT,0); //alert the tl state machine that a good packet was recieved
+			}
+			else  AddEventToTlSmQueue_extern(NEW_TL_PACKET_EVT,BAD_PKT,0); //aler the TL stat machine that a bad packet was recieved
+		}
+		last_packet_num =packet_num; //increment our packet number
 	}
-
 }
 
 /**@brief Function for initializing services that will be used by the application.
@@ -292,7 +317,11 @@ static void services_init(void)
 {
     // YOUR_JOB: Add code to initialize the services used by the application.
 		uint32_t err_code;
+	
 		ble_sm_init_t init;
+	
+	
+	
 		init.shutter_write_handler = shutter_write_handler;
 		init.tl_pkt_write_handler = tl_pkt_write_handler;
 		err_code = ble_sm_init(&m_ble_sm, &init);

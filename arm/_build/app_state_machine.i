@@ -534,9 +534,7 @@ void SetStepperPWM(int PWM);
 
 
 
-
-
-
+#line 22 "..\\localLibs\\alpine_includes.h"
 
 
 
@@ -4124,7 +4122,22 @@ void ble_srv_ascii_to_utf8(ble_srv_utf8_str_t * p_utf8, char * p_ascii);
 
 
 
-#line 25 "..\\localLibs\\app_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4172,19 +4185,19 @@ typedef struct
  
 typedef struct ble_sm_s
 {
-    ble_sm_shutter_write_handler_t  shutter_write_handler;     
-    ble_sm_tl_pkt_write_handler_t   tl_pkt_write_handler;      
-    uint16_t                      service_handle;                  
-    ble_gatts_char_handles_t      ble_sm_state_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_time_char_handles;      	  	 
-    ble_gatts_char_handles_t      ble_sm_tl_pkt_char_handles;  
-    ble_gatts_char_handles_t      ble_sm_shutter_char_handles;      	   
-		uint16_t                      report_ref_handle;               
-    uint8_t                       ble_sm_state_last;              
-		uint32_t											ble_sm_time_last;								 
-  	uint16_t                      conn_handle;                     
+	ble_sm_shutter_write_handler_t	shutter_write_handler;		 
+	ble_sm_tl_pkt_write_handler_t	 tl_pkt_write_handler;		  
+	uint16_t											service_handle;								  
+	ble_gatts_char_handles_t			ble_sm_state_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_time_char_handles;						 
+	ble_gatts_char_handles_t			ble_sm_tl_pkt_char_handles;			 
+	ble_gatts_char_handles_t			ble_sm_shutter_char_handles;					 
+	uint16_t											report_ref_handle;							 
+	uint8_t											 ble_sm_state_last;						  
+	uint32_t											ble_sm_time_last;								 
+	uint16_t											conn_handle;										 
 
-		uint8_t												uuid_type;
+	uint8_t												uuid_type;
 } ble_sm_t;
 
 
@@ -14620,6 +14633,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 #line 6 "..\\localLibs\\alpine_boards.h"
 #line 7 "..\\localLibs\\alpine_boards.h"
 
+#line 21 "..\\localLibs\\alpine_boards.h"
 
 
 
@@ -14632,7 +14646,7 @@ static __inline void nrf_gpio_port_clear(nrf_gpio_port_select_t port, uint8_t cl
 
 
 
-#line 34 "..\\localLibs\\alpine_boards.h"
+
 
 #line 42 "..\\localLibs\\alpine_boards.h"
 
@@ -14669,16 +14683,12 @@ void init_alpine_pins(void);
 
 
 
-
-
-
-
-#line 23 "..\\localLibs\\alpine_tl_state_machine.h"
-
-
-
-
-
+typedef struct Evt_struct {
+	uint8_t event_type; 
+	uint8_t last_state; 
+	uint16_t val1; 
+	uint8_t val2;
+};
 
 
 
@@ -14686,10 +14696,32 @@ void init_alpine_pins(void);
 
 
 
-#line 41 "..\\localLibs\\alpine_tl_state_machine.h"
 
 
-#line 50 "..\\localLibs\\alpine_tl_state_machine.h"
+#line 35 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#line 55 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
+
+
+#line 67 "..\\localLibs\\alpine_tl_state_machine.h"
+
+
+
 
 
 
@@ -14697,12 +14729,17 @@ void init_alpine_pins(void);
 
 
 void StartupStateMachine();
+_Bool Tl_pkt_is_good(uint8_t * tl_pkt_in); 
+void AddEventToTlSmQueue_extern( uint8_t event_type, uint16_t data1, uint8_t data2);
+void UpdateCurrentTlPacket( uint8_t* new_pkt, uint8_t length);
+
 
 
 
 void RegularTimerDone(void * nil);
 void PeripheralTimerDone(void * nil);
 void ProcessEvents(void* nil);
+
 
 
 extern app_timer_id_t            				Regular_sm_timer;

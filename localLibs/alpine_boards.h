@@ -5,7 +5,7 @@
 #include "nrf_gpio.h"
 #include "alpine_includes.h"
 
-#ifdef MICHRON //defines for michron-specific things
+#if ( MICHRON ) //defines for michron-specific things
 
 #define G_BATT_LED			0				//NC on michron
 #define R_BATT_LED			0				//NC on michron

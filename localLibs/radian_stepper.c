@@ -1,9 +1,9 @@
 //
-//  Radian_stepper.cpp
-//  
+//	Radian_stepper.cpp
+//	
 //
-//  Created by Stephen Hibbs on 9/27/12.
-//  Copyright (c) 2012 Stanford. All rights reserved.
+//	Created by Stephen Hibbs on 9/27/12.
+//	Copyright (c) 2012 Stanford. All rights reserved.
 //
 /*
 
@@ -13,7 +13,7 @@
 
 #include "alpine_boards.h"
 #include "radian_stepper.h"
-
+#include "./Simple_PWM/nrf_pwm.h" 
 
 /*
  initializes the pins associated with riving the stepper motor
@@ -26,19 +26,30 @@ void InitStepperPins(){
 	nrf_gpio_cfg_output(STEPPER_B2);
 	nrf_gpio_cfg_output(STEPPER_PWM);
 	nrf_gpio_cfg_output(BOOST_EN);
-	nrf_gpio_pin_clear(STEPPER_EN);
+	nrf_gpio_pin_clear(STEPPER_EN); //make sure stepper is off
+	nrf_gpio_pin_clear(STEPPER_PWM);
+	//#define PWM_DEFAULT_CONFIG  {.num_channels   = 1,  .gpio_num = {STEPPER_PWM}, .ppi_channel = {0,1,2,3,4,5},.gpiote_channel = {2,3,0},   .mode = PWM_MODE_LED_100};
+
+	nrf_pwm_config_t init_config = PWM_DEFAULT_CONFIG; //create the initialized struct
+	init_config.num_channels = 1; 
+	init_config.gpio_num[0] = STEPPER_PWM;
+	init_config.ppi_channel[0] = 0;//{0,1,2,3,4,5};
+	init_config.ppi_channel[1] = 1;
+	init_config.gpiote_channel[0] = 2;
+	init_config.mode = PWM_MODE_LED_100;
+	nrf_pwm_init(&init_config); //init the pwm module
 }
 
 /*
  brakes the motor and reduces power consumption
  */
 void Brake( ){
-    nrf_gpio_pin_set(STEPPER_EN);
-    SetStepperPWM(0);
-    nrf_gpio_pin_set(STEPPER_A1);
-    nrf_gpio_pin_clear(STEPPER_A2);
-    nrf_gpio_pin_set(STEPPER_B1);
-    nrf_gpio_pin_clear(STEPPER_B2);
+		nrf_gpio_pin_set(STEPPER_EN);
+		SetStepperPWM(0);
+		nrf_gpio_pin_set(STEPPER_A1);
+		nrf_gpio_pin_clear(STEPPER_A2);
+		nrf_gpio_pin_set(STEPPER_B1);
+		nrf_gpio_pin_clear(STEPPER_B2);
 }
 
 /*
@@ -46,87 +57,60 @@ void Brake( ){
  */
 void Step(int StepDirection){
 
-    static unsigned int stepNum = 0; 
-    stepNum+= StepDirection;
-    stepNum = stepNum%4;
-    
-    //if(DEBUG) Serial.println(stepNum);
-    
-    if(stepNum==0){
-        nrf_gpio_pin_set(STEPPER_A1);
-        nrf_gpio_pin_clear(STEPPER_A2);
-        nrf_gpio_pin_set(STEPPER_B1);
-        nrf_gpio_pin_clear(STEPPER_B2);
-    }
-    else if(stepNum==1){
-        nrf_gpio_pin_set(STEPPER_A1);
-        nrf_gpio_pin_clear(STEPPER_A2);
-        nrf_gpio_pin_clear(STEPPER_B1);
-        nrf_gpio_pin_set(STEPPER_B2);
-    }
-    else if(stepNum==2){
-        nrf_gpio_pin_clear(STEPPER_A1);
-        nrf_gpio_pin_set(STEPPER_A2);
-        nrf_gpio_pin_clear(STEPPER_B1);
-        nrf_gpio_pin_set(STEPPER_B2);
-        
-        
-    }
-    else{
-        nrf_gpio_pin_clear(STEPPER_A1);
-        nrf_gpio_pin_set(STEPPER_A2);
-        nrf_gpio_pin_set(STEPPER_B1);
-        nrf_gpio_pin_clear(STEPPER_B2);
-    }
-    
+	static unsigned int stepNum = 0; 
+	stepNum+= StepDirection;
+	stepNum = stepNum%4;
+	
+	//if(DEBUG) Serial.println(stepNum);
+	
+	if(stepNum==0){
+			nrf_gpio_pin_set(STEPPER_A1);
+			nrf_gpio_pin_clear(STEPPER_A2);
+			nrf_gpio_pin_set(STEPPER_B1);
+			nrf_gpio_pin_clear(STEPPER_B2);
+	}
+	else if(stepNum==1){
+			nrf_gpio_pin_set(STEPPER_A1);
+			nrf_gpio_pin_clear(STEPPER_A2);
+			nrf_gpio_pin_clear(STEPPER_B1);
+			nrf_gpio_pin_set(STEPPER_B2);
+	}
+	else if(stepNum==2){
+			nrf_gpio_pin_clear(STEPPER_A1);
+			nrf_gpio_pin_set(STEPPER_A2);
+			nrf_gpio_pin_clear(STEPPER_B1);
+			nrf_gpio_pin_set(STEPPER_B2);
+	}
+	else{
+			nrf_gpio_pin_clear(STEPPER_A1);
+			nrf_gpio_pin_set(STEPPER_A2);
+			nrf_gpio_pin_set(STEPPER_B1);
+			nrf_gpio_pin_clear(STEPPER_B2);
+	}
+		
 }
 
 /*
  takes in a pwm between 0 and 100, and sets the stepper PWM line to that duty cycle
  */
-void SetStepperPWM(int PWM){
-  //  if(PWM != OCR4B)
-  //      OCR4B = PWM;
+void SetStepperPWM(int duty){
+	//	if(PWM != OCR4B)
+	//			OCR4B = PWM;
+	nrf_gpio_pin_set(STEPPER_PWM);
+//	nrf_pwm_set_value(0,duty); //our pwm channel is channel 0
 }
 
-//enable the stepper by turning on the boost and stepper chip as well as 
-//setting up the timer4 pwm system
+//enable the stepper by turning on the boost and stepper chip
+//The Stepper PWM is not set by this though, and will be set to whatever it was last set to
 void EnableStepper(){
-    /* settings that work    
-     OCR4C =  100 ;//set the top value
-     OCR4B = 70; //set the duty cycle, since OCR4C is 100 this is just %DC
-     TCCR4A |= (1<<COM4B0) | (PWM4B);
-     TCCR4A &= ~(1<<COM4B1);     // COM4B1 = 0, COM4B0=1 so that OC4B is connected and cleared on compare match and then set high on reset of counter . Also need to turn on PWM enable for module B
-     TCCR4B = B00000010; //set the timer version off, with prescaler of 1024 to set PWM frequency to ~8KHz /
-     TCCR4D &= ~( (1<<WGM41)|(1<<WGM40)); //set WGM40 to 0
-*/
-   /*
-    OCR4C =  100 ;//set the top value
-   // OCR4B = 60; //set the duty cycle, since OCR4C is 100 this is just %DC
-    TCCR4A = 0;
-    TCCR4C = 0;
-    TCCR4A |= (1<<COM4B1) | (1<<PWM4B);
-    TCCR4A &= ~(1<<COM4B0);     // COM4B1 = 0, COM4B0=1 so that OC4B is connected and cleared on compare match and then set high on reset of counter . Also need to turn on PWM enable for module B
-    TCCR4C |= (1<<COM4B1S);
-    
-    TCCR4B = B00000010; //set the timer version off, with prescaler of 1024 to set PWM frequency to ~8KHz /
-   
-    // TCCR4D &= ~( (1<<WGM41)|(1<<WGM40)); //set WGM40 to 0
-    TCCR4D=0;
-    
-    TCCR4E = (1<<OC4OE3); //enable output to output compare
-    TIMSK4= 0;
-    TIFR4 = 0; //turn off interrupt flags
-    DT4 = 0;
-    
-    */
-   // digitalWrite(STEPPER_PWM);
-    nrf_gpio_pin_set(STEPPER_EN);
-    nrf_gpio_pin_set(BOOST_EN);
+	
+	nrf_gpio_pin_set(PWR_CNTRL); //turn on the main power channel
+	nrf_gpio_pin_set(STEPPER_EN); //enable the stepper chip
+	nrf_gpio_pin_set(BOOST_EN); //enable the boost
 }
-               
+							 
 //diable the stepper by turning off the boost and stepper chip
 void DisableStepper(){
-    nrf_gpio_pin_clear(STEPPER_EN);
-    nrf_gpio_pin_clear(BOOST_EN);
-}           
+	nrf_gpio_pin_clear(STEPPER_EN); //disable the stepper
+	//nrf_gpio_pin_clear(BOOST_EN); //disable the boost
+}					 
